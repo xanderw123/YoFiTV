@@ -1,75 +1,133 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { StationCard } from '@/components/StationCard'
+import { getCurrentUser } from '@/lib/auth'
+import { Player } from '@/components/Player'
+import { Chat } from '@/components/Chat'
 
-interface Station {
+interface StationDetail {
   id: string
   name: string
   description?: string
+  creator_id: string
   primary_color: string
   secondary_color: string
-  logo_type: string
 }
 
-export default function StationsPage() {
-  const [stations, setStations] = useState<Station[]>([])
+export default function StationPage({ params }: { params: { stationId: string } }) {
+  const [station, setStation] = useState<StationDetail | null>(null)
+  const [followers, setFollowers] = useState(0)
+  const [tips, setTips] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isFollowing, setIsFollowing] = useState(false)
+  const user = getCurrentUser()
 
   useEffect(() => {
-    const fetchStations = async () => {
+    const fetchStation = async () => {
       try {
-        const res = await fetch('/api/stations?limit=50')
+        const res = await fetch(`/api/stations/${params.stationId}`)
         const data = await res.json()
 
         if (data.success) {
-          setStations(data.stations)
+          setStation(data.station)
         } else {
           setError(data.error)
         }
       } catch (err) {
-        setError('Failed to load stations')
+        setError('Failed to load station')
         console.error(err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchStations()
-  }, [])
+    fetchStation()
+  }, [params.stationId])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div>Loading station...</div>
+      </div>
+    )
+  }
+
+  if (error || !station) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-red-500">{error || 'Station not found'}</div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4">
+    <div className="min-h-screen bg-black text-white py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-2">Browse Stations</h1>
-        <p className="text-gray-400 mb-12">Discover creators. Always on. Always live.</p>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">{station.name}</h1>
+          {station.description && <p className="text-gray-400">{station.description}</p>}
+        </div>
 
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400">Loading stations...</div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <div className="lg:col-span-2">
+            <Player stationId={station.id} />
           </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <div className="text-red-500">{error}</div>
+
+          {/* Sidebar */}
+          <div className="space-y-4">
+            {/* Followers */}
+            <div className="bg-gray-900 rounded-lg p-4">
+              <div className="text-3xl font-bold text-yellow-400">{followers}</div>
+              <div className="text-gray-400 text-sm">Followers</div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2">
+              <button
+                onClick={() => setIsFollowing(!isFollowing)}
+                className={`w-full py-2 rounded font-bold flex items-center justify-center gap-2 transition ${
+                  isFollowing
+                    ? 'bg-yellow-400 text-black hover:bg-yellow-300'
+                    : 'bg-gray-800 text-white hover:bg-gray-700'
+                }`}
+              >
+                <span className={isFollowing ? '✓' : '+'}</span>
+                {isFollowing ? 'Following' : 'Follow Station'}
+              </button>
+
+              {/* Appreciation Button - Dimmed */}
+              <div
+                className="w-full py-2 rounded font-bold flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed group relative"
+                title="Appreciations: Coming Soon"
+              >
+                <span>💚</span>
+                Appreciation
+                <div className="absolute bottom-full mb-2 px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+                  Coming Soon
+                </div>
+              </div>
+
+              {/* Subscription Button - Dimmed */}
+              <div
+                className="w-full py-2 rounded font-bold flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed group relative"
+                title="Subscriptions: Coming Soon"
+              >
+                <span>🔔</span>
+                Subscribe
+                <div className="absolute bottom-full mb-2 px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+                  Coming Soon
+                </div>
+              </div>
+            </div>
           </div>
-        ) : stations.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400">No stations available yet</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stations.map((station) => (
-              <StationCard
-                key={station.id}
-                id={station.id}
-                name={station.name}
-                description={station.description}
-                primary_color={station.primary_color}
-                secondary_color={station.secondary_color}
-                logo_type={station.logo_type}
-              />
-            ))}
+        </div>
+
+        {/* Chat */}
+        {user?.isBeta && (
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Chat</h2>
+            <Chat stationId={station.id} userId={user.id} />
           </div>
         )}
       </div>

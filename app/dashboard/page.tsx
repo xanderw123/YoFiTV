@@ -1,133 +1,135 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getCurrentUser } from '@/lib/auth'
+import { Player } from '@/components/Player'
+import { Chat } from '@/components/Chat'
 
-export default function DashboardPage() {
-  const [stationName, setStationName] = useState('')
-  const [stationDescription, setStationDescription] = useState('')
-  const [loading, setLoading] = useState(false)
+interface StationDetail {
+  id: string
+  name: string
+  description?: string
+  creator_id: string
+  primary_color: string
+  secondary_color: string
+}
+
+export default function StationPage({ params }: { params: { stationId: string } }) {
+  const [station, setStation] = useState<StationDetail | null>(null)
+  const [followers, setFollowers] = useState(0)
+  const [tips, setTips] = useState(0)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const [isFollowing, setIsFollowing] = useState(false)
+  const user = getCurrentUser()
 
-  const handleCreateStation = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+  useEffect(() => {
+    const fetchStation = async () => {
+      try {
+        const res = await fetch(`/api/stations/${params.stationId}`)
+        const data = await res.json()
 
-    try {
-      const userId = localStorage.getItem('userId')
-
-      if (!userId) {
-        setError('Please sign in first')
+        if (data.success) {
+          setStation(data.station)
+        } else {
+          setError(data.error)
+        }
+      } catch (err) {
+        setError('Failed to load station')
+        console.error(err)
+      } finally {
         setLoading(false)
-        return
       }
-
-      const res = await fetch('/api/stations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: stationName,
-          description: stationDescription,
-          creator_id: userId,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (data.success) {
-        setSuccess(true)
-        setStationName('')
-        setStationDescription('')
-        setTimeout(() => {
-          window.location.href = `/stations/${data.station.id}`
-        }, 1000)
-      } else {
-        setError(data.error)
-      }
-    } catch (err) {
-      setError('Failed to create station')
-      console.error(err)
-    } finally {
-      setLoading(false)
     }
+
+    fetchStation()
+  }, [params.stationId])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div>Loading station...</div>
+      </div>
+    )
+  }
+
+  if (error || !station) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-red-500">{error || 'Station not found'}</div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold mb-2">Creator Dashboard</h1>
-        <p className="text-gray-400 mb-8">Create and manage your 24/7 station</p>
-
-        <div className="bg-gray-900 rounded-lg p-8">
-          <h2 className="text-2xl font-bold mb-6">Create New Station</h2>
-
-          {success ? (
-            <div className="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded mb-6">
-              Station created! Redirecting...
-            </div>
-          ) : null}
-
-          {error ? (
-            <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-6">
-              {error}
-            </div>
-          ) : null}
-
-          <form onSubmit={handleCreateStation} className="space-y-6">
-            <div>
-              <label className="block text-sm font-bold mb-2">Station Name</label>
-              <input
-                type="text"
-                value={stationName}
-                onChange={(e) => setStationName(e.target.value)}
-                placeholder="e.g., Lofi Sleep Stories"
-                className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold mb-2">Description</label>
-              <textarea
-                value={stationDescription}
-                onChange={(e) => setStationDescription(e.target.value)}
-                placeholder="Describe your station..."
-                rows={4}
-                className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              />
-            </div>
-
-            <div className="bg-gray-800 rounded px-4 py-3 text-sm text-gray-400">
-              <p className="font-bold mb-2">Next Steps:</p>
-              <ol className="list-decimal ml-5 space-y-1">
-                <li>Create your station</li>
-                <li>Add YouTube videos to your rotation</li>
-                <li>Customize your logo colors</li>
-                <li>Share with your audience!</li>
-              </ol>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || !stationName}
-              className="w-full bg-yellow-400 text-black font-bold py-3 rounded hover:bg-yellow-300 disabled:opacity-50 transition"
-            >
-              {loading ? 'Creating...' : 'Create Station'}
-            </button>
-          </form>
+    <div className="min-h-screen bg-black text-white py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">{station.name}</h1>
+          {station.description && <p className="text-gray-400">{station.description}</p>}
         </div>
 
-        <div className="mt-12 bg-gray-900 rounded-lg p-8">
-          <h3 className="text-xl font-bold mb-4">Coming Soon</h3>
-          <div className="space-y-3 text-gray-400">
-            <p>✓ Rotation editor - add and manage YouTube videos</p>
-            <p>✓ Analytics - track followers, tips, watch time</p>
-            <p>✓ Logo customization - pick your brand colors</p>
-            <p>✓ Subscription settings - set your tier price</p>
-            <p>✓ Payout management - track and withdraw earnings</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <div className="lg:col-span-2">
+            <Player stationId={station.id} />
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-4">
+            {/* Followers */}
+            <div className="bg-gray-900 rounded-lg p-4">
+              <div className="text-3xl font-bold text-yellow-400">{followers}</div>
+              <div className="text-gray-400 text-sm">Followers</div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2">
+              <button
+                onClick={() => setIsFollowing(!isFollowing)}
+                className={`w-full py-2 rounded font-bold flex items-center justify-center gap-2 transition ${
+                  isFollowing
+                    ? 'bg-yellow-400 text-black hover:bg-yellow-300'
+                    : 'bg-gray-800 text-white hover:bg-gray-700'
+                }`}
+              >
+                <span className={isFollowing ? '✓' : '+'}</span>
+                {isFollowing ? 'Following' : 'Follow Station'}
+              </button>
+
+              {/* Appreciation Button - Dimmed */}
+              <div
+                className="w-full py-2 rounded font-bold flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed group relative"
+                title="Appreciations: Coming Soon"
+              >
+                <span>💚</span>
+                Appreciation
+                <div className="absolute bottom-full mb-2 px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+                  Coming Soon
+                </div>
+              </div>
+
+              {/* Subscription Button - Dimmed */}
+              <div
+                className="w-full py-2 rounded font-bold flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed group relative"
+                title="Subscriptions: Coming Soon"
+              >
+                <span>🔔</span>
+                Subscribe
+                <div className="absolute bottom-full mb-2 px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
+                  Coming Soon
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Chat */}
+        {user?.isBeta && (
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Chat</h2>
+            <Chat stationId={station.id} userId={user.id} />
+          </div>
+        )}
       </div>
     </div>
   )
