@@ -1,11 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createStation } from '@/lib/stations'
 import { createStationSession, getCurrentStationSession } from '@/lib/stationAuth'
-import { useEffect } from 'react'
 
 export default function CreatePage() {
   const [name, setName] = useState('')
@@ -36,7 +35,7 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4">
+    <div className="py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <Link href="/" className="text-gray-400 mb-8 inline-block hover:text-white">
           ← Back

@@ -85,7 +85,7 @@ export default function StationPage({ params }: { params: { stationId: string } 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="flex items-center justify-center py-12">
         <p>Loading station...</p>
       </div>
     )
@@ -93,7 +93,7 @@ export default function StationPage({ params }: { params: { stationId: string } 
 
   if (error || !station) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-4">
+      <div className="flex flex-col items-center justify-center gap-4 py-12">
         <p className="text-red-500">{error || 'Station not found'}</p>
         <Link href="/stations" className="px-4 py-2 bg-yofi-green text-black rounded font-bold">
           Back to Stations
@@ -113,17 +113,12 @@ export default function StationPage({ params }: { params: { stationId: string } 
   const showChat = station.settings?.showChat !== false
 
   return (
-    <div className="min-h-screen bg-black text-white py-8 px-4">
+    <div className="py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <Link href="/stations" className="text-gray-400 hover:text-white">
             ← Back
           </Link>
-          {canEdit && (
-            <Link href="/mystation" className="text-yofi-green hover:opacity-90 font-bold">
-              My Station
-            </Link>
-          )}
         </div>
 
         <div className="mb-8">
