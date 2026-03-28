@@ -7,14 +7,14 @@ interface Video {
   id: string
   title: string
   url: string
-  duration?: number
+  duration: number
 }
 
 export default function EditStationPage({ params }: { params: { id: string } }) {
   const [videos, setVideos] = useState<Video[]>([])
   const [youtubeUrl, setYoutubeUrl] = useState('')
-  const [duration, setDuration] = useState('600')
   const [draggedId, setDraggedId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem(`station-${params.id}-videos`)
@@ -23,27 +23,48 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
     }
   }, [params.id])
 
-  const addVideo = () => {
+  const extractVideoId = (url: string): string | null => {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)
+    return match ? match[1] : null
+  }
+
+  const addVideo = async () => {
     if (!youtubeUrl.trim()) return
 
-    const videoId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1]
+    const videoId = extractVideoId(youtubeUrl)
     if (!videoId) {
       alert('Invalid YouTube URL')
       return
     }
 
-    const newVideo: Video = {
-      id: Date.now().toString(),
-      title: `Video ${videos.length + 1}`,
-      url: youtubeUrl,
-      duration: parseInt(duration) || 600,
-    }
+    setLoading(true)
 
-    const updated = [...videos, newVideo]
-    setVideos(updated)
-    localStorage.setItem(`station-${params.id}-videos`, JSON.stringify(updated))
-    setYoutubeUrl('')
-    setDuration('600')
+    try {
+      // Fetch video info from oEmbed to get title
+      const res = await fetch(
+        `https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`
+      )
+      const data = await res.json()
+
+      // Assume standard video length of 10 minutes (600 seconds)
+      // User can add longer/shorter videos; they'll just play their full length
+      const newVideo: Video = {
+        id: Date.now().toString(),
+        title: data.title || 'Untitled Video',
+        url: youtubeUrl,
+        duration: 600, // Default to 10 min, but videos play to completion
+      }
+
+      const updated = [...videos, newVideo]
+      setVideos(updated)
+      localStorage.setItem(`station-${params.id}-videos`, JSON.stringify(updated))
+      setYoutubeUrl('')
+    } catch (err) {
+      console.error('Error fetching video info:', err)
+      alert('Could not fetch video. Make sure the URL is valid.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const removeVideo = (id: string) => {
@@ -102,36 +123,29 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
 
         <div className="bg-gray-900 rounded-lg p-6 mb-8">
           <h2 className="text-xl font-bold mb-4">Add Video</h2>
-          <div className="space-y-3">
+          <p className="text-gray-400 text-sm mb-4">Videos play in full, then loop to the next one. Build your 24/7 rotation.</p>
+          <div className="flex gap-2">
             <input
               type="text"
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addVideo()}
               placeholder="Paste YouTube URL"
-              className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="flex-1 bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yofi-green"
             />
-            <div className="flex gap-2">
-              <input
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                placeholder="Duration (seconds)"
-                className="flex-1 bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-              />
-              <button
-                onClick={addVideo}
-                className="px-6 py-2 bg-yellow-300 text-black rounded font-bold hover:bg-yellow-400"
-              >
-                Add
-              </button>
-            </div>
-            <p className="text-xs text-gray-400">Most YouTube videos are 600 seconds (10 min) or longer</p>
+            <button
+              onClick={addVideo}
+              disabled={loading}
+              className="px-6 py-2 bg-yofi-green text-black rounded font-bold hover:opacity-90 disabled:opacity-50"
+            >
+              {loading ? 'Adding...' : 'Add'}
+            </button>
           </div>
         </div>
 
         {videos.length > 0 ? (
           <div className="bg-gray-900 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Rotation Queue ({videos.length})</h2>
+            <h2 className="text-xl font-bold mb-4">Rotation Queue ({videos.length} videos)</h2>
             <div className="space-y-2">
               {videos.map((video, index) => (
                 <div
@@ -147,7 +161,6 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
                   <div className="flex-1 min-w-0">
                     <p className="font-bold">{index + 1}. {video.title}</p>
                     <p className="text-xs text-gray-400 truncate">{video.url}</p>
-                    <p className="text-xs text-gray-500">{video.duration}s</p>
                   </div>
                   <div className="flex gap-1 ml-4">
                     <button
@@ -174,7 +187,7 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mt-4">💡 Drag to reorder. Videos loop forever.</p>
+            <p className="text-xs text-gray-400 mt-4">💡 Drag to reorder. Videos loop forever in 24/7 rotation.</p>
           </div>
         ) : (
           <div className="bg-gray-800 rounded-lg p-8 text-center text-gray-400">

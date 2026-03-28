@@ -1,46 +1,65 @@
-export function getCurrentRotationPosition(totalDurationSeconds: number): number {
-  if (totalDurationSeconds === 0) return 0
-  const nowSeconds = Math.floor(Date.now() / 1000)
-  return nowSeconds % totalDurationSeconds
-}
-
-export function findCurrentVideo(
-  videos: Array<{
-    id: string
-    duration: number
-    videoId: string
-    title: string
-  }>,
-  currentPosition: number
-): {
-  videoId: string
-  positionSeconds: number
-  title: string
-  index: number
+export function getCurrentRotationPosition(videos: Array<{ duration: number }>): {
+  videoIndex: number
+  positionInVideo: number
 } {
-  let position = 0
+  if (videos.length === 0) return { videoIndex: 0, positionInVideo: 0 }
 
+  const totalDurationSeconds = videos.reduce((sum, v) => sum + (v.duration || 600), 0)
+  const nowSeconds = Math.floor(Date.now() / 1000)
+  const positionInRotation = nowSeconds % totalDurationSeconds
+
+  let elapsed = 0
   for (let i = 0; i < videos.length; i++) {
     const videoDuration = videos[i].duration || 600
-    if (currentPosition < position + videoDuration) {
+    if (positionInRotation < elapsed + videoDuration) {
       return {
-        videoId: videos[i].videoId,
-        positionSeconds: currentPosition - position,
-        title: videos[i].title,
-        index: i,
+        videoIndex: i,
+        positionInVideo: positionInRotation - elapsed,
       }
     }
-    position += videoDuration
+    elapsed += videoDuration
   }
 
-  return {
-    videoId: videos[0].videoId,
-    positionSeconds: 0,
-    title: videos[0].title,
-    index: 0,
-  }
+  return { videoIndex: 0, positionInVideo: 0 }
 }
 
-export function calculateTotalDuration(videos: Array<{ duration: number }>): number {
-  return videos.reduce((sum, v) => sum + (v.duration || 600), 0)
+export function getUpcomingVideos(
+  videos: Array<{
+    id: string
+    title: string
+    duration: number
+  }>,
+  hoursAhead: number = 4
+): Array<{
+  index: number
+  title: string
+  startTime: Date
+}> {
+  if (videos.length === 0) return []
+
+  const upcoming = []
+  const now = new Date()
+  let currentTime = new Date(now)
+  let videoIndex = getCurrentRotationPosition(videos).videoIndex
+
+  while (currentTime.getTime() - now.getTime() < hoursAhead * 3600 * 1000) {
+    const video = videos[videoIndex % videos.length]
+    upcoming.push({
+      index: videoIndex,
+      title: video.title,
+      startTime: new Date(currentTime),
+    })
+    currentTime.setSeconds(currentTime.getSeconds() + (video.duration || 600))
+    videoIndex++
+  }
+
+  return upcoming
+}
+
+export function formatTime(date: Date): string {
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  })
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { getCurrentRotationPosition, findCurrentVideo, calculateTotalDuration } from '@/lib/rotation'
+import { getCurrentRotationPosition, getUpcomingVideos, formatTime } from '@/lib/rotation'
 
 interface Station {
   id: string
@@ -14,7 +14,7 @@ interface Video {
   id: string
   title: string
   url: string
-  duration?: number
+  duration: number
 }
 
 export default function StationPage({ params }: { params: { id: string } }) {
@@ -23,7 +23,8 @@ export default function StationPage({ params }: { params: { id: string } }) {
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<string[]>([])
   const [videos, setVideos] = useState<Video[]>([])
-  const [currentVideo, setCurrentVideo] = useState<any>(null)
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
+  const [upcomingVideos, setUpcomingVideos] = useState<any[]>([])
 
   useEffect(() => {
     const stations = JSON.parse(localStorage.getItem('stations') || '[]')
@@ -36,23 +37,20 @@ export default function StationPage({ params }: { params: { id: string } }) {
     }
   }, [params.id])
 
-  // Calculate current video in rotation
+  // Update current video and upcoming videos
   useEffect(() => {
     if (videos.length === 0) return
 
     const updateRotation = () => {
-      const formatted = videos.map(v => ({
+      const position = getCurrentRotationPosition(videos)
+      setCurrentVideoIndex(position.videoIndex % videos.length)
+      
+      const upcoming = getUpcomingVideos(videos.map(v => ({
         id: v.id,
-        duration: v.duration || 600,
-        videoId: v.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] || '',
         title: v.title,
-      }))
-
-      const totalDuration = calculateTotalDuration(formatted)
-      const position = getCurrentRotationPosition(totalDuration)
-      const current = findCurrentVideo(formatted, position)
-
-      setCurrentVideo(current)
+        duration: v.duration || 600,
+      })), 3)
+      setUpcomingVideos(upcoming)
     }
 
     updateRotation()
@@ -69,6 +67,12 @@ export default function StationPage({ params }: { params: { id: string } }) {
   }
 
   if (!station) return null
+
+  const currentVideo = videos[currentVideoIndex]
+  const extractVideoId = (url: string) => {
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)
+    return match ? match[1] : null
+  }
 
   return (
     <div className="min-h-screen bg-black text-white py-8 px-4">
@@ -87,15 +91,15 @@ export default function StationPage({ params }: { params: { id: string } }) {
           </Link>
         </div>
 
-<div className="grid grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-3 gap-8 mb-12">
           <div className="col-span-2">
             {currentVideo && videos.length > 0 ? (
               <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden">
                 <iframe
-                  key={currentVideo.videoId}
+                  key={`${currentVideo.id}-${currentVideoIndex}`}
                   width="100%"
                   height="100%"
-                  src={`https://www.youtube.com/embed/${currentVideo.videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&fs=1&start=${Math.floor(currentVideo.positionSeconds)}`}
+                  src={`https://www.youtube.com/embed/${extractVideoId(currentVideo.url)}?autoplay=1&controls=1&modestbranding=1&rel=0`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -113,7 +117,7 @@ export default function StationPage({ params }: { params: { id: string } }) {
             {currentVideo && <p className="text-gray-400 text-sm mt-2">Now playing: {currentVideo.title}</p>}
           </div>
 
-<div className="space-y-3">
+          <div className="space-y-3">
             {/* Follow Button */}
             <button
               onClick={() => setIsFollowing(!isFollowing)}
@@ -133,6 +137,19 @@ export default function StationPage({ params }: { params: { id: string } }) {
             <div className="bg-gray-900 p-4 rounded">
               <div className="text-2xl font-bold">0</div>
               <p className="text-gray-400 text-sm">Followers</p>
+            </div>
+
+            {/* Upcoming Videos */}
+            <div className="bg-gray-900 p-4 rounded">
+              <p className="text-sm font-bold mb-3">Coming Up</p>
+              <div className="space-y-2">
+                {upcomingVideos.slice(1, 4).map((item, i) => (
+                  <div key={i} className="text-xs text-gray-400">
+                    <p className="truncate">{item.title}</p>
+                    <p className="text-gray-500">{formatTime(item.startTime)}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Appreciations Button - Coming Soon */}
@@ -161,6 +178,27 @@ export default function StationPage({ params }: { params: { id: string } }) {
             </button>
             <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
           </div>
+        </div>
+
+        {/* Chat */}
+        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Chat
+        </h2>
+        <div className="bg-gray-900 rounded-lg overflow-hidden flex flex-col h-96">
+          <div className="flex-1 overflow-y-auto p-4">
+            {messages.length === 0 ? (
+              <p className="text-gray-500 text-center">No messages yet</p>
+            ) : (
+              messages.map((msg, i) => (
+                <div key={i} className="text-sm text-gray-300 mb-2">
+                  You: {msg}
+                </div>
+              ))
+            )}
+          </div>
 
           <form onSubmit={handleSend} className="border-t border-gray-800 p-4 flex gap-2">
             <input
@@ -168,9 +206,9 @@ export default function StationPage({ params }: { params: { id: string } }) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message..."
-              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yofi-green"
             />
-            <button type="submit" className="bg-green-400 text-black px-4 rounded font-bold hover:bg-yellow-400">
+            <button type="submit" className="bg-yofi-green text-black px-4 rounded font-bold hover:opacity-90">
               Send
             </button>
           </form>
