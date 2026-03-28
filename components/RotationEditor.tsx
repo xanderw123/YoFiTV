@@ -47,7 +47,6 @@ export function RotationEditor({ stationId, onVideoAdded }: RotationEditorProps)
     setLoading(true)
 
     try {
-      // Fetch video info from YouTube
       const res = await fetch(
         `https://www.youtube.com/oembed?url=https://youtube.com/watch?v=${videoId}&format=json`
       )
@@ -57,7 +56,7 @@ export function RotationEditor({ stationId, onVideoAdded }: RotationEditorProps)
         id: Math.random().toString(36).substring(7),
         youtube_video_id: videoId,
         title: data.title || 'Untitled Video',
-        duration_seconds: 0, // Would need another API call to get exact duration
+        duration_seconds: 0,
       }
 
       setVideos([...videos, newVideo])
@@ -112,7 +111,6 @@ export function RotationEditor({ stationId, onVideoAdded }: RotationEditorProps)
 
   return (
     <div className="space-y-6">
-      {/* Add Video Form */}
       <div className="bg-gray-900 rounded-lg p-6">
         <h3 className="text-xl font-bold mb-4">Add Videos to Rotation</h3>
         <form onSubmit={handleAddVideo} className="flex flex-col gap-3">
@@ -137,7 +135,6 @@ export function RotationEditor({ stationId, onVideoAdded }: RotationEditorProps)
         </form>
       </div>
 
-      {/* Video List */}
       {videos.length > 0 && (
         <div className="bg-gray-900 rounded-lg p-6">
           <h3 className="text-lg font-bold mb-4">Rotation Queue ({videos.length} videos)</h3>
@@ -183,7 +180,7 @@ export function RotationEditor({ stationId, onVideoAdded }: RotationEditorProps)
             ))}
           </div>
           <div className="mt-4 text-sm text-gray-400">
-            💡 Tip: Drag videos to reorder, or use the arrow buttons. Videos play in order, then loop.
+            💡 Drag videos to reorder, or use the arrow buttons. Videos play in order, then loop.
           </div>
         </div>
       )}
