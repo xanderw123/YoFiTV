@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { getCurrentRotationPosition, findCurrentVideo, calculateTotalDuration } from '@/lib/rotation'
 
 interface Station {
   id: string
@@ -9,12 +10,20 @@ interface Station {
   description?: string
 }
 
+interface Video {
+  id: string
+  title: string
+  url: string
+  duration?: number
+}
+
 export default function StationPage({ params }: { params: { id: string } }) {
   const [station, setStation] = useState<Station | null>(null)
   const [isFollowing, setIsFollowing] = useState(false)
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<string[]>([])
-  const [videos, setVideos] = useState<any[]>([])
+  const [videos, setVideos] = useState<Video[]>([])
+  const [currentVideo, setCurrentVideo] = useState<any>(null)
 
   useEffect(() => {
     const stations = JSON.parse(localStorage.getItem('stations') || '[]')
@@ -26,6 +35,30 @@ export default function StationPage({ params }: { params: { id: string } }) {
       setVideos(JSON.parse(saved))
     }
   }, [params.id])
+
+  // Calculate current video in rotation
+  useEffect(() => {
+    if (videos.length === 0) return
+
+    const updateRotation = () => {
+      const formatted = videos.map(v => ({
+        id: v.id,
+        duration: v.duration || 600,
+        videoId: v.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1] || '',
+        title: v.title,
+      }))
+
+      const totalDuration = calculateTotalDuration(formatted)
+      const position = getCurrentRotationPosition(totalDuration)
+      const current = findCurrentVideo(formatted, position)
+
+      setCurrentVideo(current)
+    }
+
+    updateRotation()
+    const interval = setInterval(updateRotation, 1000)
+    return () => clearInterval(interval)
+  }, [videos])
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,7 +74,7 @@ export default function StationPage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-black text-white py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <Link href="/stations" className="text-gray-400 mb-8 inline-block hover:text-white">
-          Back
+          ← Back
         </Link>
 
         <div className="flex items-center justify-between mb-8">
@@ -56,12 +89,12 @@ export default function StationPage({ params }: { params: { id: string } }) {
 
         <div className="grid grid-cols-3 gap-8 mb-12">
           <div className="col-span-2">
-            {videos.length > 0 ? (
+            {currentVideo && videos.length > 0 ? (
               <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden">
                 <iframe
                   width="100%"
                   height="100%"
-                  src={`https://www.youtube.com/embed/${videos[0].url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1]}`}
+                  src={`https://www.youtube.com/embed/${currentVideo.videoId}?start=${Math.floor(currentVideo.positionSeconds)}&autoplay=1&controls=0&modestbranding=1`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -69,20 +102,21 @@ export default function StationPage({ params }: { params: { id: string } }) {
               </div>
             ) : (
               <div className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center flex-col gap-4">
-                <p className="text-gray-400">No videos yet</p>
+                <p className="text-gray-400">No videos in rotation</p>
                 <Link href={`/stations/${params.id}/edit`} className="px-4 py-2 bg-yellow-300 text-black rounded font-bold hover:bg-yellow-400">
                   Add Videos
                 </Link>
               </div>
             )}
+            {currentVideo && <p className="text-gray-400 text-sm mt-2">Now playing: {currentVideo.title}</p>}
           </div>
 
           <div className="space-y-4">
             <button
               onClick={() => setIsFollowing(!isFollowing)}
-              className={`w-full py-2 rounded font-bold ${isFollowing ? 'bg-yellow-300 text-black' : 'bg-gray-800'}`}
+              className={`w-full py-3 rounded font-bold transition ${isFollowing ? 'bg-yellow-300 text-black hover:bg-yellow-400' : 'bg-gray-800 text-white hover:bg-gray-700'}`}
             >
-              {isFollowing ? 'Following' : 'Follow'}
+              {isFollowing ? '✓ Following' : '+ Follow'}
             </button>
 
             <div className="bg-gray-900 p-4 rounded">
@@ -90,13 +124,13 @@ export default function StationPage({ params }: { params: { id: string } }) {
               <p className="text-gray-400 text-sm">Followers</p>
             </div>
 
-            <div className="bg-gray-800 p-4 rounded opacity-50">
-              <p className="text-gray-400 text-sm">Appreciation</p>
+            <div className="bg-gray-800 p-4 rounded opacity-50 cursor-not-allowed" title="Coming Soon">
+              <p className="text-gray-400 text-sm">💚 Appreciation</p>
               <p className="text-xs text-gray-500">Coming Soon</p>
             </div>
 
-            <div className="bg-gray-800 p-4 rounded opacity-50">
-              <p className="text-gray-400 text-sm">Subscribe</p>
+            <div className="bg-gray-800 p-4 rounded opacity-50 cursor-not-allowed" title="Coming Soon">
+              <p className="text-gray-400 text-sm">🔔 Subscribe</p>
               <p className="text-xs text-gray-500">Coming Soon</p>
             </div>
           </div>
@@ -122,9 +156,9 @@ export default function StationPage({ params }: { params: { id: string } }) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message..."
-              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none"
+              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
-            <button type="submit" className="bg-yellow-300 text-black px-4 rounded font-bold">
+            <button type="submit" className="bg-yellow-300 text-black px-4 rounded font-bold hover:bg-yellow-400">
               Send
             </button>
           </form>

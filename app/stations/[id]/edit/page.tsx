@@ -7,11 +7,13 @@ interface Video {
   id: string
   title: string
   url: string
+  duration?: number
 }
 
 export default function EditStationPage({ params }: { params: { id: string } }) {
   const [videos, setVideos] = useState<Video[]>([])
   const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [duration, setDuration] = useState('600')
   const [draggedId, setDraggedId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -34,12 +36,14 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
       id: Date.now().toString(),
       title: `Video ${videos.length + 1}`,
       url: youtubeUrl,
+      duration: parseInt(duration) || 600,
     }
 
     const updated = [...videos, newVideo]
     setVideos(updated)
     localStorage.setItem(`station-${params.id}-videos`, JSON.stringify(updated))
     setYoutubeUrl('')
+    setDuration('600')
   }
 
   const removeVideo = (id: string) => {
@@ -91,35 +95,43 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
     <div className="min-h-screen bg-black text-white py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <Link href={`/stations/${params.id}`} className="text-gray-400 mb-8 inline-block hover:text-white">
-          Back to Station
+          ← Back to Station
         </Link>
 
         <h1 className="text-4xl font-bold mb-8">Edit Rotation</h1>
 
-        {/* Add Video Form */}
         <div className="bg-gray-900 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold mb-4">Add Videos</h2>
-          <div className="flex gap-2">
+          <h2 className="text-xl font-bold mb-4">Add Video</h2>
+          <div className="space-y-3">
             <input
               type="text"
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
               placeholder="Paste YouTube URL"
-              className="flex-1 bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
-            <button
-              onClick={addVideo}
-              className="px-6 py-2 bg-yellow-300 text-black rounded font-bold hover:bg-yellow-400"
-            >
-              Add
-            </button>
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                placeholder="Duration (seconds)"
+                className="flex-1 bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+              <button
+                onClick={addVideo}
+                className="px-6 py-2 bg-yellow-300 text-black rounded font-bold hover:bg-yellow-400"
+              >
+                Add
+              </button>
+            </div>
+            <p className="text-xs text-gray-400">Most YouTube videos are 600 seconds (10 min) or longer</p>
           </div>
         </div>
 
-        {/* Video List */}
         {videos.length > 0 ? (
           <div className="bg-gray-900 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Rotation ({videos.length} videos)</h2>
+            <h2 className="text-xl font-bold mb-4">Rotation Queue ({videos.length})</h2>
             <div className="space-y-2">
               {videos.map((video, index) => (
                 <div
@@ -132,11 +144,12 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
                     draggedId === video.id ? 'opacity-50' : ''
                   }`}
                 >
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="font-bold">{index + 1}. {video.title}</p>
-                    <p className="text-xs text-gray-400">{video.url}</p>
+                    <p className="text-xs text-gray-400 truncate">{video.url}</p>
+                    <p className="text-xs text-gray-500">{video.duration}s</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 ml-4">
                     <button
                       onClick={() => moveUp(index)}
                       disabled={index === 0}
@@ -155,17 +168,17 @@ export default function EditStationPage({ params }: { params: { id: string } }) 
                       onClick={() => removeVideo(video.id)}
                       className="px-2 py-1 bg-red-900 hover:bg-red-800 rounded text-sm"
                     >
-                      Remove
+                      ✕
                     </button>
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mt-4">💡 Drag to reorder, use arrows, or click remove</p>
+            <p className="text-xs text-gray-400 mt-4">💡 Drag to reorder. Videos loop forever.</p>
           </div>
         ) : (
           <div className="bg-gray-800 rounded-lg p-8 text-center text-gray-400">
-            Add videos above to create your rotation
+            Add videos to create your 24/7 rotation
           </div>
         )}
       </div>
