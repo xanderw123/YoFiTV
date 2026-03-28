@@ -9,6 +9,7 @@ export interface Station {
   id: string
   name: string
   description?: string
+  passcode: string
   settings: StationSettings
   createdAt: string
 }
@@ -32,11 +33,12 @@ export function getStation(id: string): Station | null {
   return stations.find(s => s.id === id) || null
 }
 
-export function createStation(name: string, description: string): Station {
+export function createStation(name: string, description: string, passcode: string): Station {
   const station: Station = {
     id: Date.now().toString(),
     name,
     description,
+    passcode,
     settings: {
       showUpNext: true,
       showChat: true,
@@ -60,6 +62,17 @@ export function updateStation(id: string, updates: Partial<Station>) {
     stations[index] = { ...stations[index], ...updates }
     localStorage.setItem('stations', JSON.stringify(stations))
   }
+}
+
+export function deleteStation(id: string) {
+  const stations = getStations()
+  const filtered = stations.filter(s => s.id !== id)
+  localStorage.setItem('stations', JSON.stringify(filtered))
+}
+
+export function verifyStationPasscode(stationId: string, passcode: string): boolean {
+  const station = getStation(stationId)
+  return station ? station.passcode === passcode : false
 }
 
 export function getStationVideos(stationId: string): Video[] {

@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { getStation, updateStation, getStationVideos, saveStationVideos, Station, Video, deleteStation } from '@/lib/stations'
 import { getCurrentStationSession, clearStationSession } from '@/lib/stationAuth'
-import { getStation, updateStation, getStationVideos, saveStationVideos, Station, Video } from '@/lib/stations'
 
 export default function MyStationPage() {
   const router = useRouter()
@@ -23,6 +23,8 @@ export default function MyStationPage() {
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
   const [addingVideo, setAddingVideo] = useState(false)
+  const [stationName, setStationName] = useState('')
+  const [stationDescription, setStationDescription] = useState('')
 
   useEffect(() => {
     if (!session) {
@@ -37,6 +39,8 @@ export default function MyStationPage() {
     }
 
     setStation(stationData)
+    setStationName(stationData.name)
+    setStationDescription(stationData.description || '')
     setAboutText(stationData.settings.aboutText || '')
     setShowUpNext(stationData.settings.showUpNext)
     setShowChat(stationData.settings.showChat)
@@ -52,6 +56,17 @@ export default function MyStationPage() {
   const handleLogout = () => {
     clearStationSession()
     router.push('/')
+  }
+
+  const handleDelete = () => {
+    const confirm = window.confirm(
+      `Are you sure you want to delete "${station?.name}"? This cannot be undone.`
+    )
+    if (confirm) {
+      deleteStation(session!.stationId)
+      clearStationSession()
+      router.push('/')
+    }
   }
 
   const extractVideoId = (url: string): string | null => {
@@ -173,6 +188,8 @@ export default function MyStationPage() {
     }
 
     updateStation(session.stationId, {
+      name: stationName,
+      description: stationDescription,
       settings: {
         ...station.settings,
         aboutText,
@@ -187,7 +204,7 @@ export default function MyStationPage() {
   if (loading || !station || !session) return null
 
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4">
+    <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -202,12 +219,40 @@ export default function MyStationPage() {
             <button onClick={handleLogout} className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
               Sign Out
             </button>
+            <button onClick={handleDelete} className="px-4 py-2 bg-red-900 text-red-200 rounded hover:bg-red-800">
+              Delete Station
+            </button>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="col-span-2 space-y-8">
+            {/* Station Info */}
+            <div className="bg-gray-900 rounded-lg p-6">
+              <h2 className="text-xl font-bold mb-4">Station Info</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Station Name</label>
+                  <input
+                    type="text"
+                    value={stationName}
+                    onChange={(e) => setStationName(e.target.value)}
+                    className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yofi-green"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Description</label>
+                  <textarea
+                    value={stationDescription}
+                    onChange={(e) => setStationDescription(e.target.value)}
+                    rows={3}
+                    className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yofi-green"
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Station Logo */}
             <div className="bg-gray-900 rounded-lg p-6">
               <h2 className="text-xl font-bold mb-4">Station Logo</h2>
@@ -349,7 +394,7 @@ export default function MyStationPage() {
           <div className="space-y-6">
             {/* About */}
             <div className="bg-gray-900 rounded-lg p-6">
-              <h3 className="text-lg font-bold mb-3">About</h3>
+              <h3 className="text-lg font-bold mb-3">About Your Station</h3>
               <textarea
                 value={aboutText}
                 onChange={(e) => setAboutText(e.target.value)}
@@ -386,7 +431,7 @@ export default function MyStationPage() {
               onClick={saveSettings}
               className="w-full bg-yofi-green text-black font-bold py-3 rounded hover:opacity-90"
             >
-              Save All
+              Save All Settings
             </button>
           </div>
         </div>

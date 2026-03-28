@@ -12,7 +12,6 @@ export function Navbar() {
     setMounted(true)
     setSession(getCurrentStationSession())
     
-    // Listen for storage changes (login/logout from other tabs)
     const handleStorageChange = () => {
       setSession(getCurrentStationSession())
     }
