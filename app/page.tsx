@@ -29,24 +29,6 @@ export default function Home() {
             </Link>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mt-8">
-          <div className="bg-gray-900 rounded-lg p-6 text-center">
-            <div className="text-4xl mb-3">📺</div>
-            <h3 className="font-bold mb-2">Always On</h3>
-            <p className="text-gray-400 text-sm">24/7 stations from YouTube</p>
-          </div>
-          <div className="bg-gray-900 rounded-lg p-6 text-center">
-            <div className="text-4xl mb-3">👥</div>
-            <h3 className="font-bold mb-2">Your Community</h3>
-            <p className="text-gray-400 text-sm">Follow. Chat. Connect.</p>
-          </div>
-          <div className="bg-gray-900 rounded-lg p-6 text-center">
-            <div className="text-4xl mb-3">🌱</div>
-            <h3 className="font-bold mb-2">Grow & Earn</h3>
-            <p className="text-gray-400 text-sm">Keep 90% revenue</p>
-          </div>
-        </div>
       </div>
     </div>
   )
