@@ -23,12 +23,17 @@ export default function StationPage({ params }: { params: { id: string } }) {
           Back
         </Link>
 
-        <h1 className="text-4xl font-bold mb-8">Station {params.id}</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold">Station {params.id}</h1>
+          <Link href={`/stations/${params.id}/edit`} className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
+            Edit Rotation
+          </Link>
+        </div>
 
         <div className="grid grid-cols-3 gap-8 mb-12">
           <div className="col-span-2">
             <div className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
-              <p className="text-gray-400">Player placeholder</p>
+              <p className="text-gray-400">Player coming soon</p>
             </div>
           </div>
 
