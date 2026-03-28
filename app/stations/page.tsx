@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 interface Station {
@@ -31,7 +32,7 @@ export default function StationsPage() {
             <h1 className="text-4xl font-bold mb-2">Browse Stations</h1>
             <p className="text-gray-400">Discover stations. Follow creators. Curate your experience.</p>
           </div>
-          <Link href="/create" className="px-6 py-2 bg-yellow-300 text-black rounded-lg font-bold hover:bg-yellow-400">
+          <Link href="/create" className="px-6 py-2 bg-green-400 text-black rounded-lg font-bold hover:bg-green-300">
             + Create
           </Link>
         </div>
@@ -39,7 +40,7 @@ export default function StationsPage() {
         {stations.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-400 mb-6">No stations yet. Create one to get started!</p>
-            <Link href="/create" className="inline-block px-8 py-3 bg-yellow-300 text-black rounded-lg font-bold hover:bg-yellow-400">
+            <Link href="/create" className="inline-block px-8 py-3 bg-green-400 text-black rounded-lg font-bold hover:bg-green-300">
               Create Your Station
             </Link>
           </div>
@@ -48,8 +49,14 @@ export default function StationsPage() {
             {stations.map((station) => (
               <Link key={station.id} href={`/stations/${station.id}`}>
                 <div className="bg-gray-900 p-6 rounded-lg hover:bg-gray-800 cursor-pointer transition">
-                  <div className="w-full aspect-square bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-lg mb-4 flex items-center justify-center">
-                    <span className="text-6xl">▶</span>
+                  <div className="w-full aspect-square bg-gradient-to-br from-green-400 to-green-500 rounded-lg mb-4 flex items-center justify-center relative overflow-hidden">
+                    <Image
+                      src="/logos/Host Station Logo - Green Circle, Black design.svg"
+                      alt="Station"
+                      width={200}
+                      height={200}
+                      className="w-32 h-32 object-contain"
+                    />
                   </div>
                   <h2 className="text-xl font-bold mb-2">{station.name}</h2>
                   {station.description && (
