@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createStation } from '@/lib/stations'
+import { createStationSession } from '@/lib/stationAuth'
 
 export default function CreatePage() {
   const [name, setName] = useState('')
@@ -15,18 +17,9 @@ export default function CreatePage() {
     setLoading(true)
 
     try {
-      const stations = JSON.parse(localStorage.getItem('stations') || '[]')
-      const newStation = {
-        id: Date.now().toString(),
-        name,
-        description,
-      }
-      stations.push(newStation)
-      localStorage.setItem('stations', JSON.stringify(stations))
-
-      setName('')
-      setDescription('')
-      router.push('/stations')
+      const station = createStation(name, description)
+      createStationSession(station.id, station.name)
+      router.push(`/stations/${station.id}/edit`)
     } catch (error) {
       console.error('Error creating station:', error)
     } finally {
@@ -57,7 +50,7 @@ export default function CreatePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2">Description</label>
+            <label className="block text-sm font-bold mb-2">Description (Optional)</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -69,7 +62,7 @@ export default function CreatePage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !name}
             className="w-full bg-yofi-green text-black font-bold py-3 rounded hover:opacity-90 disabled:opacity-50"
           >
             {loading ? 'Creating...' : 'Create Station'}
@@ -77,13 +70,13 @@ export default function CreatePage() {
         </form>
 
         <div className="mt-12 bg-gray-900 p-8 rounded-lg">
-          <h3 className="text-xl font-bold mb-4">Coming in Phase 2</h3>
+          <h3 className="text-xl font-bold mb-4">What happens next</h3>
           <div className="space-y-2 text-gray-400 text-sm">
-            <p>✓ Video rotation editor - drag & drop</p>
-            <p>✓ Appreciations & Tips (90/10)</p>
-            <p>✓ Premium Subscriptions (90/10)</p>
-            <p>✓ Ad revenue from uploads (70/30)</p>
-            <p>✓ Analytics dashboard</p>
+            <p>✓ Upload your station logo</p>
+            <p>✓ Add YouTube videos to your rotation</p>
+            <p>✓ Edit video titles & descriptions</p>
+            <p>✓ Customize station settings</p>
+            <p>✓ Your station goes live immediately</p>
           </div>
         </div>
       </div>

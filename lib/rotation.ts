@@ -1,8 +1,10 @@
-export function getCurrentRotationPosition(videos: Array<{ duration: number }>): {
-  videoIndex: number
-  positionInVideo: number
-} {
-  if (videos.length === 0) return { videoIndex: 0, positionInVideo: 0 }
+export interface RotationState {
+  currentVideoIndex: number
+  secondsIntoCurrentVideo: number
+}
+
+export function getRotationState(videos: Array<{ duration: number }>): RotationState {
+  if (videos.length === 0) return { currentVideoIndex: 0, secondsIntoCurrentVideo: 0 }
 
   const totalDurationSeconds = videos.reduce((sum, v) => sum + (v.duration || 600), 0)
   const nowSeconds = Math.floor(Date.now() / 1000)
@@ -13,14 +15,14 @@ export function getCurrentRotationPosition(videos: Array<{ duration: number }>):
     const videoDuration = videos[i].duration || 600
     if (positionInRotation < elapsed + videoDuration) {
       return {
-        videoIndex: i,
-        positionInVideo: positionInRotation - elapsed,
+        currentVideoIndex: i,
+        secondsIntoCurrentVideo: positionInRotation - elapsed,
       }
     }
     elapsed += videoDuration
   }
 
-  return { videoIndex: 0, positionInVideo: 0 }
+  return { currentVideoIndex: 0, secondsIntoCurrentVideo: 0 }
 }
 
 export function getUpcomingVideos(
@@ -40,7 +42,8 @@ export function getUpcomingVideos(
   const upcoming = []
   const now = new Date()
   let currentTime = new Date(now)
-  let videoIndex = getCurrentRotationPosition(videos).videoIndex
+  const rotation = getRotationState(videos)
+  let videoIndex = rotation.currentVideoIndex
 
   while (currentTime.getTime() - now.getTime() < hoursAhead * 3600 * 1000) {
     const video = videos[videoIndex % videos.length]
