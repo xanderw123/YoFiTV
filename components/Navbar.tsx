@@ -51,3 +51,8 @@ export function Navbar() {
               <img src="/logos/Host_a_Station_Logo.svg" alt="Host a Station" className="h-6 w-auto" />
             </Link>
           )}
+        </div>
+      </div>
+    </nav>
+  )
+}
