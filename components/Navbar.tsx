@@ -6,9 +6,13 @@ import { useEffect, useState } from 'react'
 
 export function Navbar() {
   const [session, setSession] = useState(getCurrentStationSession())
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     setSession(getCurrentStationSession())
+    
+    // Listen for storage changes (login/logout from other tabs)
     const handleStorageChange = () => {
       setSession(getCurrentStationSession())
     }
@@ -16,19 +20,30 @@ export function Navbar() {
     return () => window.removeEventListener('storage', handleStorageChange)
   }, [])
 
+  if (!mounted) return null
+
   return (
     <nav className="border-b border-gray-800 px-4 py-4">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <img src="/logos/YoFi TV Icon.svg" alt="YoFi TV" className="w-10 h-10" />
-          <span className="font-bold text-xl">YoFi TV</span>
+        <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition">
+          <img src="/logos/YoFi TV Icon.svg" alt="YoFi TV" className="h-10 w-auto" />
         </Link>
-        {session && (
-          <Link href="/mystation" className="flex items-center gap-2 px-4 py-2 bg-yofi-green text-black rounded-lg hover:opacity-90 transition font-bold">
-            <img src="/logos/MyStation_Logo.svg" alt="My Station" className="w-5 h-5" />
-            My Station
+
+        <div className="flex items-center gap-4">
+          <Link href="/guide" className="h-10 hover:opacity-90 transition flex items-center">
+            <img src="/logos/TV_Guide_Logo.svg" alt="Guide" className="h-10 w-auto" />
           </Link>
-        )}
+
+          {session ? (
+            <Link href="/mystation" className="h-10 hover:opacity-90 transition flex items-center">
+              <img src="/logos/MyStation_Logo.svg" alt="My Station" className="h-10 w-auto" />
+            </Link>
+          ) : (
+            <Link href="/create" className="h-10 hover:opacity-90 transition flex items-center">
+              <img src="/logos/Host_a_Station_Logo.svg" alt="Host a Station" className="h-10 w-auto" />
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   )
