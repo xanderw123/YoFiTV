@@ -94,7 +94,7 @@ export function Navbar() {
                       className="block px-4 py-3 hover:bg-gray-800 text-sm font-medium border-t border-gray-700"
                       onClick={() => setMenuOpen(false)}
                     >
-                      Host a Station
+                      Create a Station
                     </Link>
                     <Link
                       href="/signin"
