@@ -1,12 +1,31 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+interface Station {
+  id: string
+  name: string
+  description?: string
+}
 
 export default function StationPage({ params }: { params: { id: string } }) {
+  const [station, setStation] = useState<Station | null>(null)
   const [isFollowing, setIsFollowing] = useState(false)
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<string[]>([])
+  const [videos, setVideos] = useState<any[]>([])
+
+  useEffect(() => {
+    const stations = JSON.parse(localStorage.getItem('stations') || '[]')
+    const found = stations.find((s: Station) => s.id === params.id)
+    setStation(found)
+
+    const saved = localStorage.getItem(`station-${params.id}-videos`)
+    if (saved) {
+      setVideos(JSON.parse(saved))
+    }
+  }, [params.id])
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault()
@@ -16,6 +35,8 @@ export default function StationPage({ params }: { params: { id: string } }) {
     }
   }
 
+  if (!station) return null
+
   return (
     <div className="min-h-screen bg-black text-white py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -24,7 +45,10 @@ export default function StationPage({ params }: { params: { id: string } }) {
         </Link>
 
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">Station {params.id}</h1>
+          <div>
+            <h1 className="text-4xl font-bold mb-2">{station.name}</h1>
+            {station.description && <p className="text-gray-400">{station.description}</p>}
+          </div>
           <Link href={`/stations/${params.id}/edit`} className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
             Edit Rotation
           </Link>
@@ -32,9 +56,25 @@ export default function StationPage({ params }: { params: { id: string } }) {
 
         <div className="grid grid-cols-3 gap-8 mb-12">
           <div className="col-span-2">
-            <div className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
-              <p className="text-gray-400">Player coming soon</p>
-            </div>
+            {videos.length > 0 ? (
+              <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${videos[0].url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)?.[1]}`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center flex-col gap-4">
+                <p className="text-gray-400">No videos yet</p>
+                <Link href={`/stations/${params.id}/edit`} className="px-4 py-2 bg-yellow-300 text-black rounded font-bold hover:bg-yellow-400">
+                  Add Videos
+                </Link>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
