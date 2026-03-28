@@ -15,12 +15,12 @@ export default function Home() {
       {/* Info Sections - Using PNG Images */}
       <div className="w-full max-w-4xl space-y-6 md:space-y-8">
         <img 
-          src="/images/homepage-info-1.png" 
+          src="/images/Homepage_Information.png" 
           alt="YoFi TV Information" 
           className="w-full h-auto rounded-lg"
         />
         <img 
-          src="/images/homepage-info-2.png" 
+          src="/images/Homepage_Information_2.png" 
           alt="MyStation Coming Soon" 
           className="w-full h-auto rounded-lg"
         />
