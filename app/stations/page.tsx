@@ -3,13 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { getStations } from '@/lib/stations'
 
 interface Station {
   id: string
   name: string
   description?: string
-  settings: {
+  settings?: {
     logoUrl?: string
   }
 }
@@ -19,8 +18,16 @@ export default function StationsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const stationsData = getStations()
-    setStations(stationsData as any)
+    try {
+      const saved = localStorage.getItem('stations')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        setStations(Array.isArray(parsed) ? parsed : [])
+      }
+    } catch (err) {
+      console.error('Error loading stations:', err)
+      setStations([])
+    }
     setLoading(false)
   }, [])
 
@@ -52,22 +59,18 @@ export default function StationsPage() {
               <Link key={station.id} href={`/stations/${station.id}`}>
                 <div className="bg-gray-900 p-6 rounded-lg hover:bg-gray-800 cursor-pointer transition">
                   <div className="w-full aspect-square bg-black rounded-lg mb-4 flex items-center justify-center border border-gray-800 relative">
-                    {station.settings.logoUrl ? (
+                    {station.settings?.logoUrl ? (
                       <Image
                         src={station.settings.logoUrl}
                         alt="Station Logo"
                         width={150}
                         height={150}
-                        className="w-auto h-auto"
+                        className="w-auto h-auto max-w-[120px] max-h-[120px]"
                       />
                     ) : (
-                      <Image
-                        src="/logos/Host Station Logo - Green Circle, Black design.svg"
-                        alt="Station"
-                        width={150}
-                        height={150}
-                        className="w-auto h-auto"
-                      />
+                      <div className="w-32 h-32 flex items-center justify-center">
+                        <span className="text-6xl">▶</span>
+                      </div>
                     )}
                   </div>
                   <h2 className="text-xl font-bold mb-2">{station.name}</h2>
