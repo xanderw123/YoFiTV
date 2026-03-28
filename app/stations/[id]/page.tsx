@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { getCurrentRotationPosition, findCurrentVideo, calculateTotalDuration } from '@/lib/rotation'
 
@@ -36,7 +37,6 @@ export default function StationPage({ params }: { params: { id: string } }) {
     }
   }, [params.id])
 
-  // Calculate current video in rotation
   useEffect(() => {
     if (videos.length === 0) return
 
@@ -103,7 +103,7 @@ export default function StationPage({ params }: { params: { id: string } }) {
             ) : (
               <div className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center flex-col gap-4">
                 <p className="text-gray-400">No videos in rotation</p>
-                <Link href={`/stations/${params.id}/edit`} className="px-4 py-2 bg-yellow-300 text-black rounded font-bold hover:bg-yellow-400">
+                <Link href={`/stations/${params.id}/edit`} className="px-4 py-2 bg-yofi-green text-black rounded font-bold hover:opacity-90">
                   Add Videos
                 </Link>
               </div>
@@ -111,36 +111,69 @@ export default function StationPage({ params }: { params: { id: string } }) {
             {currentVideo && <p className="text-gray-400 text-sm mt-2">Now playing: {currentVideo.title}</p>}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
+            {/* Follow Button */}
             <button
               onClick={() => setIsFollowing(!isFollowing)}
-              className={`w-full py-3 rounded font-bold transition ${isFollowing ? 'bg-yellow-300 text-black hover:bg-yellow-400' : 'bg-gray-800 text-white hover:bg-gray-700'}`}
+              className={`w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 ${
+                isFollowing
+                  ? 'bg-yofi-green text-black hover:opacity-90'
+                  : 'bg-gray-800 text-white hover:bg-gray-700'
+              }`}
             >
-              {isFollowing ? '✓ Following' : '+ Follow'}
+              <Image
+                src="/icons/follow_png.svg"
+                alt="Follow"
+                width={18}
+                height={18}
+              />
+              {isFollowing ? 'Following' : 'Follow'}
             </button>
 
+            {/* Followers Stats */}
             <div className="bg-gray-900 p-4 rounded">
               <div className="text-2xl font-bold">0</div>
               <p className="text-gray-400 text-sm">Followers</p>
             </div>
 
-            <div className="bg-gray-800 p-4 rounded opacity-50 cursor-not-allowed" title="Coming Soon">
-              <p className="text-gray-400 text-sm">💚 Appreciation</p>
-              <p className="text-xs text-gray-500">Coming Soon</p>
-            </div>
+            {/* Appreciations Button - Coming Soon */}
+            <button
+              disabled
+              className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
+              title="Coming Soon"
+            >
+              <span>💚</span>
+              Appreciations
+            </button>
+            <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
 
-            <div className="bg-gray-800 p-4 rounded opacity-50 cursor-not-allowed" title="Coming Soon">
-              <p className="text-gray-400 text-sm">🔔 Subscribe</p>
-              <p className="text-xs text-gray-500">Coming Soon</p>
-            </div>
+            {/* Premium Subscriptions Button - Coming Soon */}
+            <button
+              disabled
+              className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
+              title="Coming Soon"
+            >
+              <span>🔔</span>
+              Premium Subscriptions
+            </button>
+            <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold mb-4">Chat</h2>
+        {/* Chat */}
+        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+          <Image
+            src="/icons/conversation_png.svg"
+            alt="Chat"
+            width={24}
+            height={24}
+          />
+          Chat
+        </h2>
         <div className="bg-gray-900 rounded-lg overflow-hidden flex flex-col h-96">
           <div className="flex-1 overflow-y-auto p-4">
             {messages.length === 0 ? (
-              <p className="text-gray-500 text-center">No messages</p>
+              <p className="text-gray-500 text-center">No messages yet</p>
             ) : (
               messages.map((msg, i) => (
                 <div key={i} className="text-sm text-gray-300 mb-2">
@@ -156,9 +189,9 @@ export default function StationPage({ params }: { params: { id: string } }) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message..."
-              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yofi-green"
             />
-            <button type="submit" className="bg-yellow-300 text-black px-4 rounded font-bold hover:bg-yellow-400">
+            <button type="submit" className="bg-yofi-green text-black px-4 rounded font-bold hover:opacity-90">
               Send
             </button>
           </form>

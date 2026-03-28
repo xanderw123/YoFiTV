@@ -38,7 +38,7 @@ export default function CreatePage() {
     <div className="min-h-screen bg-black text-white py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <Link href="/" className="text-gray-400 mb-8 inline-block hover:text-white">
-          Back
+          ← Back
         </Link>
 
         <h1 className="text-4xl font-bold mb-8">Create Station</h1>
@@ -51,7 +51,7 @@ export default function CreatePage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., BoneMan's World"
-              className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yofi-green"
               required
             />
           </div>
@@ -63,14 +63,14 @@ export default function CreatePage() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's your station about?"
               rows={4}
-              className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yofi-green"
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
-            className="w-full bg-yellow-300 text-black font-bold py-3 rounded hover:bg-yellow-400 disabled:opacity-50"
+            className="w-full bg-yofi-green text-black font-bold py-3 rounded hover:opacity-90 disabled:opacity-50"
           >
             {loading ? 'Creating...' : 'Create Station'}
           </button>
@@ -81,7 +81,7 @@ export default function CreatePage() {
           <div className="space-y-2 text-gray-400 text-sm">
             <p>✓ Video rotation editor - drag & drop</p>
             <p>✓ Appreciations & Tips (90/10)</p>
-            <p>✓ Subscriptions (90/10)</p>
+            <p>✓ Premium Subscriptions (90/10)</p>
             <p>✓ Ad revenue from uploads (70/30)</p>
             <p>✓ Analytics dashboard</p>
           </div>

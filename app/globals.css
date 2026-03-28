@@ -2,13 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* YoFi Green - matches logo */
+.bg-yofi-green {
+  background-color: #00FF00;
 }
 
-body {
-  background-color: #000000;
-  color: #ffffff;
+.text-yofi-green {
+  color: #00FF00;
+}
+
+.border-yofi-green {
+  border-color: #00FF00;
+}
+
+.hover\:bg-yofi-green:hover {
+  background-color: #00FF00;
+}
+
+/* Image utilities - no stretching */
+.image-contain {
+  object-fit: contain;
+}
+
+.image-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
