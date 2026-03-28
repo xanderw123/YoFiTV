@@ -23,7 +23,7 @@ export function Navbar() {
   }, [])
 
   const handleSignOut = () => {
-    clearStessionSession()
+    clearStationSession()
     setSession(null)
     setMenuOpen(false)
     router.push('/')
