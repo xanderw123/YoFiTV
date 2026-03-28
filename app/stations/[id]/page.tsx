@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { getCurrentRotationPosition, findCurrentVideo, calculateTotalDuration } from '@/lib/rotation'
 
@@ -37,6 +36,7 @@ export default function StationPage({ params }: { params: { id: string } }) {
     }
   }, [params.id])
 
+  // Calculate current video in rotation
   useEffect(() => {
     if (videos.length === 0) return
 
@@ -87,17 +87,19 @@ export default function StationPage({ params }: { params: { id: string } }) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 gap-8 mb-12">
+<div className="grid grid-cols-3 gap-8 mb-12">
           <div className="col-span-2">
             {currentVideo && videos.length > 0 ? (
               <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden">
                 <iframe
+                  key={currentVideo.videoId}
                   width="100%"
                   height="100%"
-                  src={`https://www.youtube.com/embed/${currentVideo.videoId}?start=${Math.floor(currentVideo.positionSeconds)}&autoplay=1&controls=0&modestbranding=1`}
+                  src={`https://www.youtube.com/embed/${currentVideo.videoId}?autoplay=1&controls=0&modestbranding=1&rel=0&fs=1&start=${Math.floor(currentVideo.positionSeconds)}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  style={{ display: 'block' }}
                 />
               </div>
             ) : (
@@ -111,7 +113,7 @@ export default function StationPage({ params }: { params: { id: string } }) {
             {currentVideo && <p className="text-gray-400 text-sm mt-2">Now playing: {currentVideo.title}</p>}
           </div>
 
-          <div className="space-y-3">
+<div className="space-y-3">
             {/* Follow Button */}
             <button
               onClick={() => setIsFollowing(!isFollowing)}
@@ -121,12 +123,9 @@ export default function StationPage({ params }: { params: { id: string } }) {
                   : 'bg-gray-800 text-white hover:bg-gray-700'
               }`}
             >
-              <Image
-                src="/icons/follow_png.svg"
-                alt="Follow"
-                width={18}
-                height={18}
-              />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+              </svg>
               {isFollowing ? 'Following' : 'Follow'}
             </button>
 
@@ -142,7 +141,9 @@ export default function StationPage({ params }: { params: { id: string } }) {
               className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
               title="Coming Soon"
             >
-              <span>💚</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
               Appreciations
             </button>
             <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
@@ -153,34 +154,12 @@ export default function StationPage({ params }: { params: { id: string } }) {
               className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
               title="Coming Soon"
             >
-              <span>🔔</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+              </svg>
               Premium Subscriptions
             </button>
             <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
-          </div>
-        </div>
-
-        {/* Chat */}
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <Image
-            src="/icons/conversation_png.svg"
-            alt="Chat"
-            width={24}
-            height={24}
-          />
-          Chat
-        </h2>
-        <div className="bg-gray-900 rounded-lg overflow-hidden flex flex-col h-96">
-          <div className="flex-1 overflow-y-auto p-4">
-            {messages.length === 0 ? (
-              <p className="text-gray-500 text-center">No messages yet</p>
-            ) : (
-              messages.map((msg, i) => (
-                <div key={i} className="text-sm text-gray-300 mb-2">
-                  You: {msg}
-                </div>
-              ))
-            )}
           </div>
 
           <form onSubmit={handleSend} className="border-t border-gray-800 p-4 flex gap-2">
@@ -189,9 +168,9 @@ export default function StationPage({ params }: { params: { id: string } }) {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message..."
-              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yofi-green"
+              className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
             />
-            <button type="submit" className="bg-yofi-green text-black px-4 rounded font-bold hover:opacity-90">
+            <button type="submit" className="bg-green-400 text-black px-4 rounded font-bold hover:bg-yellow-400">
               Send
             </button>
           </form>
