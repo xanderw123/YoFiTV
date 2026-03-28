@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'YoFi TV - Always On',
-  description: 'Curate your world. Follow stations. Watch 24/7.',
+  description: 'Curate your world. Watch stations 24/7.',
 }
 
 export default function RootLayout({
