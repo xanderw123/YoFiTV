@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { formatTime } from '@/lib/rotation'
 
 interface Video {
   id: string
@@ -12,7 +13,6 @@ interface Video {
 interface Station {
   id: string
   name: string
-  description?: string
 }
 
 interface GridCell {
@@ -40,16 +40,14 @@ export default function GuidePage() {
     setLoading(false)
   }, [])
 
-  // Generate grid data
   useEffect(() => {
     if (stations.length === 0) return
 
     const generateGrid = () => {
-      const blockDurationSeconds = 30 * 60 // 30 minutes
+      const blockDurationSeconds = 30 * 60
       const newGridData = new Map<string, GridCell[]>()
       const newTimeBlocks: Date[] = []
 
-      // Generate time blocks for next 4 hours (8 blocks of 30 min each)
       let blockStart = new Date(currentTime)
       blockStart.setMinutes(Math.floor(blockStart.getMinutes() / 30) * 30)
       blockStart.setSeconds(0)
@@ -59,14 +57,12 @@ export default function GuidePage() {
         blockStart.setMinutes(blockStart.getMinutes() + 30)
       }
 
-      // For each station, calculate what's playing in each block
       stations.forEach((station) => {
         const stationGrid: GridCell[] = []
         const videosSaved = localStorage.getItem(`station-${station.id}-videos`)
         const videos: Video[] = videosSaved ? JSON.parse(videosSaved) : []
 
         if (videos.length === 0) {
-          // Fill with empty videos
           for (let i = 0; i < 8; i++) {
             stationGrid.push({
               videoTitle: 'No videos',
@@ -77,15 +73,12 @@ export default function GuidePage() {
           return
         }
 
-        // Calculate total rotation duration in seconds
         const totalDuration = videos.reduce((sum, v) => sum + (v.duration || 600), 0)
 
-        // For each time block, figure out what video is playing
         newTimeBlocks.forEach((blockTime) => {
           const blockSeconds = Math.floor(blockTime.getTime() / 1000)
           const positionInRotation = blockSeconds % totalDuration
 
-          // Find which video is playing at this time
           let elapsed = 0
           let currentVideoTitle = 'Unknown'
 
@@ -114,21 +107,12 @@ export default function GuidePage() {
     generateGrid()
   }, [stations, currentTime])
 
-  // Update time every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date())
     }, 60000)
     return () => clearInterval(interval)
   }, [])
-
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    })
-  }
 
   if (loading) {
     return (
@@ -155,7 +139,6 @@ export default function GuidePage() {
   return (
     <div className="min-h-screen bg-black text-white py-8 px-4">
       <div className="max-w-full">
-        {/* Header */}
         <div className="mb-8 flex items-center justify-between px-4">
           <div>
             <h1 className="text-4xl font-bold mb-2">Station Guide</h1>
@@ -166,10 +149,8 @@ export default function GuidePage() {
           </Link>
         </div>
 
-        {/* Grid */}
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full">
-            {/* Time Header Row */}
             <div className="flex border-b border-gray-700 sticky top-0">
               <div className="w-48 flex-shrink-0 bg-gray-950 border-r border-gray-700 p-4" />
               {timeBlocks.map((time, i) => (
@@ -182,13 +163,11 @@ export default function GuidePage() {
               ))}
             </div>
 
-            {/* Station Rows */}
             {stations.map((station) => {
               const stationCells = gridData.get(station.id) || []
 
               return (
                 <div key={station.id} className="flex border-b border-gray-700">
-                  {/* Station Name Column */}
                   <Link
                     href={`/stations/${station.id}`}
                     className="w-48 flex-shrink-0 bg-gray-950 border-r border-gray-700 p-4 hover:bg-gray-800 transition cursor-pointer"
@@ -197,7 +176,6 @@ export default function GuidePage() {
                     <p className="text-xs text-gray-500">Live Now</p>
                   </Link>
 
-                  {/* Time Block Cells */}
                   {stationCells.map((cell, i) => {
                     const blockStart = cell.startTime.getTime()
                     const blockEnd = blockStart + 30 * 60 * 1000
@@ -226,7 +204,6 @@ export default function GuidePage() {
           </div>
         </div>
 
-        {/* Legend */}
         <div className="mt-8 px-4 flex gap-8 text-sm text-gray-400">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 border-l-4 border-l-yofi-green bg-gray-800"></div>

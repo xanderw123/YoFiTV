@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* YoFi Green - matches logo */
+/* YoFi Green - #00FF00 */
 .bg-yofi-green {
   background-color: #00FF00;
 }
@@ -19,13 +19,6 @@
   background-color: #00FF00;
 }
 
-/* Image utilities - no stretching */
-.image-contain {
-  object-fit: contain;
-}
-
-.image-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.focus\:ring-yofi-green:focus {
+  --tw-ring-color: #00FF00;
 }
