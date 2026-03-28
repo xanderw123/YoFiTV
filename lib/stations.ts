@@ -83,4 +83,13 @@ export function getStationVideos(stationId: string): Video[] {
 
 export function saveStationVideos(stationId: string, videos: Video[]) {
   localStorage.setItem(`station-${stationId}-videos`, JSON.stringify(videos))
+}export function migrateStationsToPasscode() {
+  const stations = getStations()
+  const updated = stations.map(station => {
+    if (!station.passcode) {
+      return { ...station, passcode: '' }
+    }
+    return station
+  })
+  localStorage.setItem('stations', JSON.stringify(updated))
 }

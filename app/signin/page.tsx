@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getStations, verifyStationPasscode } from '@/lib/stations'
+import { getStations } from '@/lib/stations'
 import { createStationSession, getCurrentStationSession } from '@/lib/stationAuth'
 
 export default function SignInPage() {
@@ -30,25 +30,28 @@ export default function SignInPage() {
     setError('')
     setLoading(true)
 
-    if (!selectedStationId || !passcode) {
-      setError('Please select a station and enter your passcode')
-      setLoading(false)
-      return
-    }
-
-    const isValid = verifyStationPasscode(selectedStationId, passcode)
-    
-    if (!isValid) {
-      setError('Invalid passcode')
+    if (!selectedStationId) {
+      setError('Please select a station')
       setLoading(false)
       return
     }
 
     const station = stations.find(s => s.id === selectedStationId)
-    if (station) {
-      createStationSession(selectedStationId, station.name)
-      router.push('/mystation')
+    if (!station) {
+      setError('Station not found')
+      setLoading(false)
+      return
     }
+
+    // Allow sign-in if passcode is empty OR passcode matches
+    if (station.passcode && passcode !== station.passcode) {
+      setError('Invalid passcode')
+      setLoading(false)
+      return
+    }
+
+    createStationSession(selectedStationId, station.name)
+    router.push('/mystation')
   }
 
   if (session) return null
@@ -89,12 +92,12 @@ export default function SignInPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold mb-2">Passcode</label>
+              <label className="block text-sm font-bold mb-2">Passcode (if set)</label>
               <input
                 type="password"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter your passcode"
+                placeholder="Leave blank if no passcode"
                 className="w-full bg-gray-800 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yofi-green"
               />
             </div>
@@ -107,7 +110,7 @@ export default function SignInPage() {
 
             <button
               type="submit"
-              disabled={loading || !selectedStationId || !passcode}
+              disabled={loading || !selectedStationId}
               className="w-full bg-yofi-green text-black font-bold py-3 rounded hover:opacity-90 disabled:opacity-50"
             >
               {loading ? 'Signing in...' : 'Sign In'}
