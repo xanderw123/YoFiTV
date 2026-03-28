@@ -4,13 +4,21 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createStation } from '@/lib/stations'
-import { createStationSession } from '@/lib/stationAuth'
+import { createStationSession, getCurrentStationSession } from '@/lib/stationAuth'
+import { useEffect } from 'react'
 
 export default function CreatePage() {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const session = getCurrentStationSession()
+
+  useEffect(() => {
+    if (session) {
+      router.push('/mystation')
+    }
+  }, [session, router])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,9 +27,9 @@ export default function CreatePage() {
     try {
       const station = createStation(name, description)
       createStationSession(station.id, station.name)
-      router.push(`/stations/${station.id}/edit`)
+      router.push('/mystation')
     } catch (error) {
-      console.error('Error creating station:', error)
+      console.error('Error:', error)
     } finally {
       setLoading(false)
     }
@@ -38,7 +46,7 @@ export default function CreatePage() {
 
         <form onSubmit={handleCreate} className="bg-gray-900 p-8 rounded-lg space-y-6">
           <div>
-            <label className="block text-sm font-bold mb-2">Station Name</label>
+            <label className="block text-sm font-bold mb-2">Name</label>
             <input
               type="text"
               value={name}
@@ -50,7 +58,7 @@ export default function CreatePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold mb-2">Description (Optional)</label>
+            <label className="block text-sm font-bold mb-2">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -65,20 +73,9 @@ export default function CreatePage() {
             disabled={loading || !name}
             className="w-full bg-yofi-green text-black font-bold py-3 rounded hover:opacity-90 disabled:opacity-50"
           >
-            {loading ? 'Creating...' : 'Create Station'}
+            {loading ? 'Creating...' : 'Create'}
           </button>
         </form>
-
-        <div className="mt-12 bg-gray-900 p-8 rounded-lg">
-          <h3 className="text-xl font-bold mb-4">What happens next</h3>
-          <div className="space-y-2 text-gray-400 text-sm">
-            <p>✓ Upload your station logo</p>
-            <p>✓ Add YouTube videos to your rotation</p>
-            <p>✓ Edit video titles & descriptions</p>
-            <p>✓ Customize station settings</p>
-            <p>✓ Your station goes live immediately</p>
-          </div>
-        </div>
       </div>
     </div>
   )

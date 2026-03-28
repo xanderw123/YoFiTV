@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { formatTime } from '@/lib/rotation'
+import { getCurrentStationSession } from '@/lib/stationAuth'
 
 interface Video {
   id: string
@@ -21,6 +22,7 @@ interface GridCell {
 }
 
 export default function GuidePage() {
+  const session = getCurrentStationSession()
   const [stations, setStations] = useState<Station[]>([])
   const [gridData, setGridData] = useState<Map<string, GridCell[]>>(new Map())
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -139,14 +141,23 @@ export default function GuidePage() {
   return (
     <div className="min-h-screen bg-black text-white py-8 px-4">
       <div className="max-w-full">
-        <div className="mb-8 flex items-center justify-between px-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Station Guide</h1>
-            <p className="text-gray-400">What's on now and next</p>
+        <div className="mb-8 px-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <img src="/logos/YoFi TV Icon.svg" alt="YoFi TV" className="w-10 h-10 mb-2" />
+              <h1 className="text-4xl font-bold">Station Guide</h1>
+            </div>
+            <div className="flex gap-4">
+              {session && (
+                <Link href="/mystation" className="text-yofi-green hover:opacity-90 font-bold">
+                  My Station
+                </Link>
+              )}
+              <Link href="/stations" className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700">
+                Browse
+              </Link>
+            </div>
           </div>
-          <Link href="/stations" className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700">
-            Browse Stations
-          </Link>
         </div>
 
         <div className="overflow-x-auto">

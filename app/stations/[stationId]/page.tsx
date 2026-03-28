@@ -23,7 +23,6 @@ export default function StationPage({ params }: { params: { stationId: string } 
   const [station, setStation] = useState<Station | null>(null)
   const [videos, setVideos] = useState<Video[]>([])
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-  const [secondsIntoVideo, setSecondsIntoVideo] = useState(0)
   const [message, setMessage] = useState('')
   const [messages, setMessages] = useState<string[]>([])
   const [upcomingVideos, setUpcomingVideos] = useState<any[]>([])
@@ -56,7 +55,6 @@ export default function StationPage({ params }: { params: { stationId: string } 
       try {
         const rotation = getRotationState(videos)
         setCurrentVideoIndex(rotation.currentVideoIndex)
-        setSecondsIntoVideo(rotation.secondsIntoCurrentVideo)
 
         const upcoming = getUpcomingVideos(
           videos.map(v => ({
@@ -117,30 +115,29 @@ export default function StationPage({ params }: { params: { stationId: string } 
   return (
     <div className="min-h-screen bg-black text-white py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        <Link href="/stations" className="text-gray-400 mb-8 inline-block hover:text-white">
-          ← Back
-        </Link>
-
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">{station.name}</h1>
-            {station.description && <p className="text-gray-400">{station.description}</p>}
-          </div>
+          <Link href="/stations" className="text-gray-400 hover:text-white">
+            ← Back
+          </Link>
           {canEdit && (
-            <Link href={`/stations/${params.stationId}/edit`} className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
-              Edit Station
+            <Link href="/mystation" className="text-yofi-green hover:opacity-90 font-bold">
+              My Station
             </Link>
           )}
+        </div>
+
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">{station.name}</h1>
+          {station.description && <p className="text-gray-400">{station.description}</p>}
         </div>
 
         <div className="mb-12">
           {currentVideo && videos.length > 0 ? (
             <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden mb-4">
               <iframe
-                key={`${currentVideo.id}-${currentVideoIndex}-${Math.floor(secondsIntoVideo)}`}
                 width="100%"
                 height="100%"
-                src={`https://www.youtube.com/embed/${extractVideoId(currentVideo.url)}?autoplay=1&controls=1&modestbranding=1&rel=0&start=${Math.floor(secondsIntoVideo)}`}
+                src={`https://www.youtube.com/embed/${extractVideoId(currentVideo.url)}?autoplay=1&controls=1&modestbranding=1&rel=0`}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -151,7 +148,7 @@ export default function StationPage({ params }: { params: { stationId: string } 
             <div className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center flex-col gap-4 mb-4">
               <p className="text-gray-400">No videos in rotation</p>
               {canEdit && (
-                <Link href={`/stations/${params.stationId}/edit`} className="px-4 py-2 bg-yofi-green text-black rounded font-bold hover:opacity-90">
+                <Link href="/mystation" className="px-4 py-2 bg-yofi-green text-black rounded font-bold hover:opacity-90">
                   Add Videos
                 </Link>
               )}
@@ -170,9 +167,7 @@ export default function StationPage({ params }: { params: { stationId: string } 
           {videos.length > 0 && (
             <div className="mt-6">
               <button className="flex items-center gap-2 px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                </svg>
+                <img src="/icons/follow.svg" alt="Follow" className="w-5 h-5" />
               </button>
             </div>
           )}
@@ -238,9 +233,7 @@ export default function StationPage({ params }: { params: { stationId: string } 
               className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
               title="Coming Soon"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
+              <img src="/icons/Appreciation.svg" alt="Appreciation" className="w-5 h-5" />
             </button>
             <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
 
@@ -249,9 +242,7 @@ export default function StationPage({ params }: { params: { stationId: string } 
               className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
               title="Coming Soon"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-              </svg>
+              <img src="/icons/subscribe.svg" alt="Subscribe" className="w-5 h-5" />
             </button>
             <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
           </div>
