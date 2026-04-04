@@ -1,248 +1,116 @@
-'use client'
+// app/stations/[stationId]/page.tsx
 
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { getCurrentStationSession, isStationOwner } from '@/lib/stationAuth'
-import { getRotationState, getUpcomingVideos, formatTime } from '@/lib/rotation'
-import { getStation, getStationVideos, Video } from '@/lib/stations'
+'use client';
 
-interface Station {
-  id: string
-  name: string
-  description?: string
-  settings?: {
-    showUpNext?: boolean
-    showChat?: boolean
-    aboutText?: string
-    logoUrl?: string
-  }
-}
+import Link from 'next/link';
+import { DEMO_STATIONS } from '@/lib/demo-data';
 
-export default function StationPage({ params }: { params: { stationId: string } }) {
-  const session = getCurrentStationSession()
-  const [station, setStation] = useState<Station | null>(null)
-  const [videos, setVideos] = useState<Video[]>([])
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState<string[]>([])
-  const [upcomingVideos, setUpcomingVideos] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+export default function StationDetailPage({
+  params,
+}: {
+  params: { stationId: string };
+}) {
+  const stationId = params.stationId;
+  const station = DEMO_STATIONS.find((s) => s.id === stationId);
 
-  useEffect(() => {
-    try {
-      const stationData = getStation(params.stationId)
-      if (stationData) {
-        setStation(stationData)
-      } else {
-        setError('Station not found')
-      }
-
-      const videosData = getStationVideos(params.stationId)
-      setVideos(videosData)
-    } catch (err) {
-      console.error('Error loading station:', err)
-      setError('Failed to load station')
-    } finally {
-      setLoading(false)
-    }
-  }, [params.stationId])
-
-  useEffect(() => {
-    if (videos.length === 0) return
-
-    const updateRotation = () => {
-      try {
-        const rotation = getRotationState(videos)
-        setCurrentVideoIndex(rotation.currentVideoIndex)
-
-        const upcoming = getUpcomingVideos(
-          videos.map(v => ({
-            id: v.id,
-            title: v.title,
-            duration: v.duration || 600,
-          })),
-          3
-        )
-        setUpcomingVideos(upcoming)
-      } catch (err) {
-        console.error('Error updating rotation:', err)
-      }
-    }
-
-    updateRotation()
-    const interval = setInterval(updateRotation, 1000)
-    return () => clearInterval(interval)
-  }, [videos])
-
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (message.trim()) {
-      setMessages([...messages, message])
-      setMessage('')
-    }
-  }
-
-  if (loading) {
+  if (!station) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <p>Loading station...</p>
+      <div className="station-not-found">
+        <h1>Station Not Found</h1>
+        <Link href="/guide">← Back to Guide</Link>
       </div>
-    )
+    );
   }
-
-  if (error || !station) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 py-12">
-        <p className="text-red-500">{error || 'Station not found'}</p>
-        <Link href="/stations" className="px-4 py-2 bg-yofi-green text-black rounded font-bold">
-          Back to Stations
-        </Link>
-      </div>
-    )
-  }
-
-  const currentVideo = videos[currentVideoIndex]
-  const extractVideoId = (url: string) => {
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/)
-    return match ? match[1] : null
-  }
-
-  const canEdit = session && isStationOwner(params.stationId)
-  const showUpNext = station.settings?.showUpNext !== false
-  const showChat = station.settings?.showChat !== false
 
   return (
-    <div className="py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/stations" className="text-gray-400 hover:text-white">
-            ← Back
-          </Link>
-        </div>
+    <main className="station-detail-page">
+      <div className="station-detail-container">
+        {/* Back Button */}
+        <Link href="/guide" className="back-link">
+          ← Back to Guide
+        </Link>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">{station.name}</h1>
-          {station.description && <p className="text-gray-400">{station.description}</p>}
-        </div>
+        {/* Station Header */}
+        <div className="station-header-detail">
+          <div className="station-image-detail">
+            <img src={station.logo} alt={station.name} />
+          </div>
 
-        <div className="mb-12">
-          {currentVideo && videos.length > 0 ? (
-            <div className="w-full aspect-video bg-gray-900 rounded-lg overflow-hidden mb-4">
-              <iframe
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${extractVideoId(currentVideo.url)}?autoplay=1&controls=1&modestbranding=1&rel=0`}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{ display: 'block' }}
-              />
+          <div className="station-info-detail">
+            <h1>{station.name}</h1>
+            <p className="station-subtitle-detail">{station.subtitle}</p>
+            <p className="station-description-detail">
+              {station.description}
+            </p>
+
+            {/* Categories */}
+            <div className="station-categories-detail">
+              {station.categories.map((cat) => (
+                <span key={cat} className="category-tag-detail">
+                  {cat}
+                </span>
+              ))}
             </div>
-          ) : (
-            <div className="w-full aspect-video bg-gray-900 rounded-lg flex items-center justify-center flex-col gap-4 mb-4">
-              <p className="text-gray-400">No videos in rotation</p>
-              {canEdit && (
-                <Link href="/mystation" className="px-4 py-2 bg-yofi-green text-black rounded font-bold hover:opacity-90">
-                  Add Videos
-                </Link>
-              )}
-            </div>
-          )}
 
-          {currentVideo && (
-            <div className="space-y-2">
-              <p className="text-gray-300 font-bold">Now playing: {currentVideo.title}</p>
-              {currentVideo.description && (
-                <p className="text-gray-400 text-sm">{currentVideo.description}</p>
-              )}
-            </div>
-          )}
+            {/* Controls */}
+            <div className="station-controls-detail">
+              <button
+                className="control-btn-detail disabled"
+                disabled
+                title="Coming in Phase 1"
+              >
+                <img src="/icons/follow.svg" alt="Follow" />
+                <span>Follow</span>
+              </button>
 
-          {videos.length > 0 && (
-            <div className="mt-6">
-              <button className="flex items-center gap-2 px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">
-                <img src="/icons/follow.svg" alt="Follow" className="w-5 h-5" />
+              <button
+                className="control-btn-detail disabled"
+                disabled
+                title="Coming in Phase 1"
+              >
+                <img src="/icons/Appreciation.svg" alt="Appreciate" />
+                <span>Appreciate</span>
+              </button>
+
+              <button
+                className="control-btn-detail disabled"
+                disabled
+                title="Coming in Phase 1"
+              >
+                <img src="/icons/conversation.svg" alt="Chat" />
+                <span>Chat</span>
+              </button>
+
+              <button
+                className="control-btn-detail disabled"
+                disabled
+                title="Coming in Phase 1"
+              >
+                <img src="/icons/subscribe.svg" alt="Subscribe" />
+                <span>Subscribe</span>
               </button>
             </div>
-          )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-8">
-          {showChat && (
-            <div className="col-span-2">
-              <h2 className="text-2xl font-bold mb-4">Chat</h2>
-              <div className="bg-gray-900 rounded-lg overflow-hidden flex flex-col h-96">
-                <div className="flex-1 overflow-y-auto p-4">
-                  {messages.length === 0 ? (
-                    <p className="text-gray-500 text-center">No messages yet</p>
-                  ) : (
-                    messages.map((msg, i) => (
-                      <div key={i} className="text-sm text-gray-300 mb-2">
-                        You: {msg}
-                      </div>
-                    ))
-                  )}
-                </div>
+        {/* About Section */}
+        <div className="station-about-detail">
+          <h3>About This Station</h3>
+          <p>{station.about}</p>
+        </div>
 
-                <form onSubmit={handleSend} className="border-t border-gray-800 p-4 flex gap-2">
-                  <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Message..."
-                    className="flex-1 bg-gray-800 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yofi-green"
-                  />
-                  <button type="submit" className="bg-yofi-green text-black px-4 rounded font-bold hover:opacity-90">
-                    Send
-                  </button>
-                </form>
+        {/* Videos Section */}
+        <div className="station-videos-detail">
+          <h3>Videos</h3>
+          <div className="videos-list">
+            {station.videos.map((video) => (
+              <div key={video.id} className="video-item">
+                <p className="video-title">{video.title}</p>
               </div>
-            </div>
-          )}
-
-          <div className="space-y-6">
-            {station.settings?.aboutText && (
-              <div className="bg-gray-900 rounded-lg p-6">
-                <h3 className="text-lg font-bold mb-3">About</h3>
-                <p className="text-gray-400 text-sm">{station.settings.aboutText}</p>
-              </div>
-            )}
-
-            {showUpNext && upcomingVideos.length > 0 && (
-              <div className="bg-gray-900 rounded-lg p-6">
-                <h3 className="text-lg font-bold mb-3">Coming Up</h3>
-                <div className="space-y-3">
-                  {upcomingVideos.slice(1, 4).map((item, i) => (
-                    <div key={i} className="text-sm border-b border-gray-800 pb-2 last:border-0">
-                      <p className="text-white truncate font-medium">{item.title}</p>
-                      <p className="text-gray-500 text-xs">{formatTime(item.startTime)}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <button
-              disabled
-              className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
-              title="Coming Soon"
-            >
-              <img src="/icons/Appreciation.svg" alt="Appreciation" className="w-5 h-5" />
-            </button>
-            <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
-
-            <button
-              disabled
-              className="w-full py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 bg-gray-800 text-gray-600 opacity-50 cursor-not-allowed"
-              title="Coming Soon"
-            >
-              <img src="/icons/subscribe.svg" alt="Subscribe" className="w-5 h-5" />
-            </button>
-            <p className="text-xs text-gray-500 text-center">Coming in Phase 2</p>
+            ))}
           </div>
         </div>
       </div>
-    </div>
-  )
+    </main>
+  );
 }

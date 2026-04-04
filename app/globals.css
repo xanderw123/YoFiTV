@@ -925,33 +925,36 @@ hr {
 }
 
 /* ========================================
-   STATION DETAIL STYLES
+   STATION DETAIL PAGE
    ======================================== */
 
-.station-detail {
+.station-detail-page {
   min-height: 100vh;
   background-color: black;
   padding: 40px 20px;
+  color: white;
 }
 
 .station-detail-container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
-.back-button {
+.back-link {
   display: inline-block;
   color: #00ff00;
+  text-decoration: none;
   font-size: 14px;
   margin-bottom: 30px;
   transition: opacity 0.2s;
 }
 
-.back-button:hover {
+.back-link:hover {
   opacity: 0.8;
 }
 
-.station-header {
+/* Station Header */
+.station-header-detail {
   display: flex;
   gap: 40px;
   margin-bottom: 50px;
@@ -959,61 +962,57 @@ hr {
   align-items: flex-start;
 }
 
-.station-image {
-  width: 280px;
-  height: 280px;
+.station-image-detail {
+  width: 300px;
+  aspect-ratio: 16 / 9;
   background-color: #1a1a1a;
   border: 2px solid #333;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  flex-shrink: 0;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
-.station-image img {
+.station-image-detail img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.station-image-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.station-info {
+.station-info-detail {
   flex: 1;
   min-width: 300px;
 }
 
-.station-info h1 {
+.station-info-detail h1 {
   font-size: 42px;
-  margin-bottom: 15px;
-  font-family: 'Seravek', serif;
+  font-weight: 700;
+  margin: 0 0 10px 0;
   color: white;
+  font-family: 'Seravek', serif;
 }
 
-.description {
-  font-size: 18px;
+.station-subtitle-detail {
+  font-size: 16px;
+  color: #00ff00;
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.station-description-detail {
+  font-size: 16px;
   color: #cccccc;
-  margin-bottom: 20px;
+  margin: 0 0 20px 0;
   line-height: 1.6;
 }
 
-.categories {
+.station-categories-detail {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
-.category-tag {
+.category-tag-detail {
   background-color: #1a1a1a;
   border: 1px solid #333;
   color: #999;
@@ -1022,14 +1021,15 @@ hr {
   font-size: 12px;
 }
 
-.station-controls {
+/* Controls */
+.station-controls-detail {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-top: 30px;
+  margin-top: 25px;
 }
 
-.control-button {
+.control-btn-detail {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1040,121 +1040,186 @@ hr {
   border-radius: 4px;
   color: #00ff00;
   cursor: pointer;
-  transition: all 0.2s ease;
   font-size: 14px;
   font-weight: 600;
-  min-height: 48px;
+  transition: all 0.2s;
+  font-family: 'Helvetica', sans-serif;
 }
 
-.control-button:not(:disabled):hover {
+.control-btn-detail:not(:disabled):hover {
   background-color: #00ff00;
   color: black;
-  transform: scale(1.05);
 }
 
-.control-button:disabled {
+.control-btn-detail:disabled {
   opacity: 1;
   cursor: not-allowed;
-  transition: opacity 0.2s ease;
 }
 
-.control-button:disabled:hover {
+.control-btn-detail:disabled:hover {
   opacity: 0.4;
-  border-color: #00ff00;
-  color: #00ff00;
-  background-color: transparent;
-  transform: none;
 }
 
-.control-button img {
-  width: 20px;
-  height: 20px;
+.control-btn-detail img {
+  width: 18px;
+  height: 18px;
   filter: brightness(0) saturate(100%) invert(82%) sepia(53%) saturate(1000%) hue-rotate(85deg);
 }
 
-.station-about {
-  margin-top: 50px;
-  padding-top: 30px;
-  border-top: 1px solid #333;
+.control-btn-detail:disabled:hover img {
+  filter: brightness(0) saturate(100%) invert(82%) sepia(53%) saturate(1000%) hue-rotate(85deg);
 }
 
-.station-about h3 {
+/* About Section */
+.station-about-detail {
+  margin-bottom: 50px;
+  padding: 30px 0;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+}
+
+.station-about-detail h3 {
   font-size: 24px;
-  margin-bottom: 20px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
   color: #00ff00;
   font-family: 'Seravek', serif;
 }
 
-.station-about p {
+.station-about-detail p {
   font-size: 16px;
   color: #cccccc;
+  margin: 0;
   line-height: 1.7;
-  max-width: 700px;
+  max-width: 800px;
 }
 
+/* Videos Section */
+.station-videos-detail h3 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  color: #00ff00;
+  font-family: 'Seravek', serif;
+}
+
+.videos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.video-item {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  padding: 16px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.video-item:hover {
+  border-color: #00ff00;
+  background-color: #222;
+}
+
+.video-title {
+  margin: 0;
+  font-size: 16px;
+  color: white;
+  font-weight: 600;
+}
+
+/* Not Found */
+.station-not-found {
+  min-height: 100vh;
+  background-color: black;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.station-not-found h1 {
+  color: white;
+  margin-bottom: 30px;
+  font-size: 32px;
+}
+
+.station-not-found a {
+  color: #00ff00;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.station-not-found a:hover {
+  opacity: 0.8;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .station-header {
+  .station-detail-page {
+    padding: 20px;
+  }
+
+  .station-header-detail {
     flex-direction: column;
     gap: 30px;
   }
 
-  .station-image {
+  .station-image-detail {
     width: 100%;
-    max-width: 280px;
-    height: 280px;
+    max-width: 300px;
   }
 
-  .station-info h1 {
+  .station-info-detail h1 {
     font-size: 32px;
   }
 
-  .description {
-    font-size: 16px;
+  .station-description-detail {
+    font-size: 14px;
   }
 
-  .station-controls {
-    gap: 10px;
+  .station-controls-detail {
+    gap: 8px;
   }
 
-  .control-button {
-    padding: 10px 15px;
+  .control-btn-detail {
+    padding: 10px 16px;
     font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
-  .station-detail {
-    padding: 20px 12px;
+  .station-detail-page {
+    padding: 15px;
   }
 
-  .station-detail-container {
-    max-width: 100%;
+  .station-image-detail {
+    width: 100%;
+    max-width: 250px;
   }
 
-  .station-info h1 {
+  .station-info-detail h1 {
     font-size: 24px;
   }
 
-  .description {
-    font-size: 14px;
+  .station-description-detail {
+    font-size: 13px;
   }
 
-  .station-controls {
+  .station-controls-detail {
     flex-direction: column;
   }
 
-  .control-button {
+  .control-btn-detail {
     width: 100%;
-    padding: 12px 15px;
     justify-content: flex-start;
   }
 
-  .categories {
-    gap: 8px;
-  }
-
-  .category-tag {
-    font-size: 11px;
-    padding: 5px 10px;
+  .station-about-detail h3,
+  .station-videos-detail h3 {
+    font-size: 20px;
   }
 }
