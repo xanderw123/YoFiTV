@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { DEMO_STATIONS } from '@/lib/demo-data';
 
 export default function GuidePage() {
-  // Time slots for the guide (in 2-hour blocks)
+  // Time slots for the guide
   const timeSlots = [
     '12:00 AM',
     '2:00 AM',
@@ -22,81 +22,93 @@ export default function GuidePage() {
     '10:00 PM',
   ];
 
-  // For demo purposes, we'll rotate through stations for each time slot
+  const getVideoForSlot = (stationIndex: number, slotIndex: number) => {
+    const station = DEMO_STATIONS[stationIndex];
+    const videoIndex = slotIndex % station.videos.length;
+    return station.videos[videoIndex];
+  };
+
   const getStationForSlot = (slotIndex: number) => {
     return DEMO_STATIONS[slotIndex % DEMO_STATIONS.length];
   };
 
+  // Get "now playing" (first slot, first station)
+  const nowPlayingStation = DEMO_STATIONS[0];
+  const nowPlayingVideo = nowPlayingStation.videos[0];
+
   return (
-    <main className="guide-page">
-      <div className="guide-container">
-        {/* Header */}
-        <div className="guide-header">
-          <h1>Station Guide</h1>
-          <p className="guide-subtitle">
-            24/7 rotations - Find what's playing now or browse upcoming
-          </p>
+    <main className="guide-page-new">
+      <div className="guide-header-new">
+        <div className="guide-logo-section">
+          <img
+            src="/logos/YoFi TV Icon.svg"
+            alt="YoFi TV"
+            className="guide-yofi-logo"
+          />
+          <h1>Guide</h1>
         </div>
 
-        {/* Guide Grid */}
-        <div className="guide-wrapper">
-          <div className="guide-grid">
-            {/* Time Column (Left) */}
-            <div className="guide-column guide-time-column">
-              <div className="guide-cell guide-header-cell">Time</div>
-              {timeSlots.map((time, index) => (
-                <div key={`time-${index}`} className="guide-cell guide-time-cell">
-                  {time}
-                </div>
-              ))}
+        {/* Now Playing Picture-in-Picture */}
+        <div className="now-playing-pip">
+          <div className="pip-video">
+            <div className="pip-placeholder">
+              <img src={nowPlayingStation.logo} alt="Now Playing" />
             </div>
-
-            {/* Station Columns */}
-            {DEMO_STATIONS.map((station) => (
-              <div key={station.id} className="guide-column">
-                {/* Station Header */}
-                <div className="guide-cell guide-header-cell guide-station-header">
-                  <img
-                    src={station.logo}
-                    alt={station.name}
-                    className="guide-station-logo"
-                  />
-                  <div className="guide-station-info">
-                    <p className="guide-station-name">{station.name}</p>
-                    <p className="guide-station-subtitle">{station.subtitle}</p>
-                  </div>
-                </div>
-
-                {/* Video Slots */}
-                {timeSlots.map((time, slotIndex) => {
-                  const videoIndex = slotIndex % station.videos.length;
-                  const video = station.videos[videoIndex];
-
-                  return (
-                    <Link
-                      key={`${station.id}-${slotIndex}`}
-                      href={`/stations/${station.id}`}
-                      className="guide-cell-link"
-                    >
-                      <div className="guide-cell guide-station-cell">
-                        <div className="guide-video-title">{video.title}</div>
-                        <div className="guide-video-meta">{station.name}</div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            ))}
+          </div>
+          <div className="pip-info">
+            <p className="pip-station">{nowPlayingStation.name}</p>
+            <p className="pip-video-title">{nowPlayingVideo.title}</p>
           </div>
         </div>
+      </div>
 
-        {/* Info Text */}
-        <div className="guide-info">
-          <p>
-            Click any time slot to see what's playing now or coming up next on
-            that station.
-          </p>
+      {/* Guide Grid */}
+      <div className="guide-grid-container-new">
+        {/* Time Column */}
+        <div className="guide-column-new time-column-new">
+          <div className="guide-cell-new time-header">Time</div>
+          {timeSlots.map((time, index) => (
+            <div key={`time-${index}`} className="guide-cell-new time-cell-new">
+              {time}
+            </div>
+          ))}
         </div>
+
+        {/* Station Columns */}
+        {DEMO_STATIONS.map((station, stationIndex) => (
+          <div key={station.id} className="guide-column-new">
+            {/* Station Header with Logo */}
+            <div className="guide-cell-new station-header-new">
+              <img
+                src={station.logo}
+                alt={station.name}
+                className="station-logo-header"
+              />
+            </div>
+
+            {/* Video Cells */}
+            {timeSlots.map((time, slotIndex) => {
+              const video = getVideoForSlot(stationIndex, slotIndex);
+
+              return (
+                <Link
+                  key={`${station.id}-${slotIndex}`}
+                  href={`/stations/${station.id}`}
+                  className="guide-cell-link-new"
+                >
+                  <div className="guide-cell-new video-cell-new">
+                    <p className="cell-video-title">{video.title}</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="guide-legend-new">
+        <p>Click any time slot to view station details</p>
       </div>
     </main>
   );
