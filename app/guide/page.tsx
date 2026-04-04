@@ -72,103 +72,98 @@ export default function GuidePage() {
     selectedCell.slotIndex
   );
   const selectedTime = timeSlots[selectedCell.slotIndex];
+  const nextTime = new Date(selectedTime.getTime() + 30 * 60000);
 
   // Currently playing (first station, first slot)
   const nowPlayingStation = DEMO_STATIONS[0];
-  const nowPlayingVideo = getVideoForSlot(0, 0);
 
   return (
-    <main className="guide-page-final">
-      {/* Top Section - Selected Station Details */}
-      <div className="guide-top-section">
-        <div className="guide-top-left">
-          {/* Station Logo */}
-          <div className="guide-top-logo">
-            <img src={selectedStation.logo} alt={selectedStation.name} />
-          </div>
-
-          {/* Station Info */}
-          <div className="guide-top-info">
-            <div className="guide-station-name-time">
-              <h2>{selectedStation.name}</h2>
-              <p className="guide-time-slot">
-                {formatTime(selectedTime)} - {formatTime(new Date(selectedTime.getTime() + 30 * 60000))}
-              </p>
+    <main className="guide-final">
+      {/* TOP SECTION - Green Background */}
+      <div className="guide-top-final">
+        <div className="guide-top-content">
+          {/* Left Side: Logo + Info */}
+          <div className="guide-left-side">
+            {/* Station Logo */}
+            <div className="guide-logo-box">
+              <img src={selectedStation.logo} alt={selectedStation.name} />
             </div>
 
-            {/* Big Video Title */}
-            <h1 className="guide-big-title">{selectedVideo.title}</h1>
+            {/* Station Name + Time */}
+            <div className="guide-station-header">
+              <h2>{selectedStation.name}</h2>
+              <p className="guide-time-range">
+                {formatTime(selectedTime)} - {formatTime(nextTime)}
+              </p>
+            </div>
+          </div>
 
-            {/* Description */}
-            <p className="guide-description">
-              {selectedStation.about}
+          {/* Center: Big Title + Description */}
+          <div className="guide-center-content">
+            <h1 className="guide-main-title">{selectedVideo.title}</h1>
+            <p className="guide-station-desc">{selectedStation.about}</p>
+          </div>
+
+          {/* Right Side: Picture-in-Picture */}
+          <div className="guide-right-side">
+            <div className="guide-pip-box">
+              <img src={nowPlayingStation.logo} alt="Now Playing" />
+            </div>
+            <p className="guide-pip-label">
+              Picture-in-Picture<br/>(Currently Playing)
             </p>
           </div>
         </div>
-
-        {/* Right: Picture-in-Picture */}
-        <div className="guide-pip">
-          <div className="pip-container">
-            <img src={nowPlayingStation.logo} alt="Now Playing" />
-          </div>
-          <p className="pip-label">Picture-in-Picture<br/>(Currently Playing)</p>
-        </div>
       </div>
 
-      {/* Guide Grid */}
-      <div className="guide-grid-final">
-        {/* Date/Time Header */}
-        <div className="guide-grid-header">
-          <div className="grid-header-left">
-            <p className="grid-date">{formatDate(now)}</p>
+      {/* GUIDE GRID */}
+      <div className="guide-grid-final-v2">
+        {/* Header Row */}
+        <div className="grid-header-row">
+          <div className="grid-header-date">
+            <span>{formatDate(now)}</span>
           </div>
-          <div className="grid-header-times">
-            {timeSlots.map((time, index) => (
-              <div key={`time-${index}`} className="grid-time-header">
-                {formatTime(time)}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Stations and Videos */}
-        <div className="guide-grid-rows">
-          {DEMO_STATIONS.map((station, stationIndex) => (
-            <div key={station.id} className="guide-grid-row">
-              {/* Station Logo */}
-              <div className="grid-station-logo">
-                <img src={station.logo} alt={station.name} />
-              </div>
-
-              {/* Video Cells */}
-              <div className="grid-videos">
-                {timeSlots.map((time, slotIndex) => {
-                  const video = getVideoForSlot(stationIndex, slotIndex);
-                  const isSelected =
-                    selectedCell.stationIndex === stationIndex &&
-                    selectedCell.slotIndex === slotIndex;
-
-                  return (
-                    <button
-                      key={`${station.id}-${slotIndex}`}
-                      className={`grid-video-cell ${isSelected ? 'selected' : ''}`}
-                      onClick={() =>
-                        setSelectedCell({ stationIndex, slotIndex })
-                      }
-                    >
-                      <Link
-                        href={`/stations/${station.id}`}
-                        className="grid-cell-link"
-                      >
-                        {video.title}
-                      </Link>
-                    </button>
-                  );
-                })}
-              </div>
+          {timeSlots.map((time, index) => (
+            <div key={`header-${index}`} className="grid-header-time">
+              {formatTime(time)}
             </div>
           ))}
         </div>
+
+        {/* Station Rows */}
+        {DEMO_STATIONS.map((station, stationIndex) => (
+          <div key={station.id} className="grid-station-row">
+            {/* Station Logo */}
+            <div className="grid-logo-cell">
+              <img src={station.logo} alt={station.name} />
+            </div>
+
+            {/* Video Cells */}
+            {timeSlots.map((time, slotIndex) => {
+              const video = getVideoForSlot(stationIndex, slotIndex);
+              const isSelected =
+                selectedCell.stationIndex === stationIndex &&
+                selectedCell.slotIndex === slotIndex;
+
+              return (
+                <button
+                  key={`${station.id}-${slotIndex}`}
+                  className={`grid-video-cell-v2 ${isSelected ? 'active' : ''}`}
+                  onClick={() =>
+                    setSelectedCell({ stationIndex, slotIndex })
+                  }
+                >
+                  <Link
+                    href={`/stations/${station.id}`}
+                    className="grid-cell-link-v2"
+                  >
+                    {video.title}
+                  </Link>
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </main>
   );
