@@ -10,25 +10,25 @@ export function Navbar() {
 
   return (
     <nav className="navbar">
-      {/* Left: Logo/Home */}
-      <Link href="/" className="navbar-logo">
-        <img
-          src="/logos/YoFi TV Icon.svg"
-          alt="Home"
-          className="navbar-logo-img"
-        />
-      </Link>
+      {/* Left: Home + Guide Icons */}
+      <div className="navbar-icons-left">
+        <Link href="/" className="navbar-icon-link" title="Home">
+          <img
+            src="/logos/YoFi TV Icon.svg"
+            alt="Home"
+            className="navbar-icon"
+          />
+        </Link>
+        <Link href="/guide" className="navbar-icon-link" title="Guide">
+          <img
+            src="/logos/TV_Guide_Icon.svg"
+            alt="Guide"
+            className="navbar-icon"
+          />
+        </Link>
+      </div>
 
-      {/* Center: Guide Icon */}
-      <Link href="/guide" className="navbar-icon-link">
-        <img
-          src="/logos/TV_Guide_Icon.svg"
-          alt="Guide"
-          className="navbar-icon"
-        />
-      </Link>
-
-      {/* Right: Hamburger Button */}
+      {/* Right: Hamburger Menu */}
       <button
         className="hamburger-button"
         onClick={() => setMenuOpen(!menuOpen)}
