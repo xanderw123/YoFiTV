@@ -165,10 +165,10 @@ hr {
 }
 
 /* ========================================
-   GUIDE PAGE (FINAL - MATCH MOCKUP)
+   GUIDE PAGE FINAL V2 (EXACT MOCKUP)
    ======================================== */
 
-.guide-final {
+.guide-page-final-v2 {
   min-height: 100vh;
   background-color: black;
   padding: 20px;
@@ -178,29 +178,49 @@ hr {
   gap: 20px;
 }
 
-/* TOP SECTION - Green Background */
-.guide-top-final {
-  background: linear-gradient(135deg, #c4ff00 0%, #a8e063 100%);
+/* TOP SECTION */
+.guide-top-section-v2 {
+  position: relative;
+  background-color: #d9ffbf;
   border-radius: 16px;
   padding: 40px;
   color: black;
+  overflow: hidden;
 }
 
-.guide-top-content {
+/* Oversized Background Icon */
+.guide-bg-icon {
+  position: absolute;
+  bottom: -20px;
+  left: -80px;
+  width: 400px;
+  height: 400px;
+  opacity: 0.15;
+  z-index: 0;
+}
+
+.guide-bg-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.guide-top-content-v2 {
+  position: relative;
+  z-index: 1;
   display: flex;
   gap: 40px;
   align-items: flex-start;
 }
 
-/* Left Side */
-.guide-left-side {
+/* Left: Logo + Station */
+.guide-top-left-v2 {
   display: flex;
   gap: 20px;
   align-items: flex-start;
   flex-shrink: 0;
 }
 
-.guide-logo-box {
+.guide-logo-top-v2 {
   width: 160px;
   aspect-ratio: 16 / 9;
   background-color: black;
@@ -209,19 +229,19 @@ hr {
   flex-shrink: 0;
 }
 
-.guide-logo-box img {
+.guide-logo-top-v2 img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.guide-station-header {
+.guide-station-info-top-v2 {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
 }
 
-.guide-station-header h2 {
+.guide-station-info-top-v2 h2 {
   font-size: 18px;
   font-weight: 700;
   margin: 0;
@@ -229,22 +249,22 @@ hr {
   font-family: 'Helvetica', sans-serif;
 }
 
-.guide-time-range {
+.guide-time-slot-v2 {
   font-size: 13px;
   color: #333;
   margin: 0;
   font-weight: 600;
 }
 
-/* Center Content */
-.guide-center-content {
+/* Center: Title + Description */
+.guide-center-v2 {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.guide-main-title {
+.guide-big-title-v2 {
   font-size: 56px;
   font-weight: 700;
   margin: 0;
@@ -253,16 +273,16 @@ hr {
   line-height: 1.1;
 }
 
-.guide-station-desc {
-  font-size: 16px;
+.guide-desc-v2 {
+  font-size: 15px;
   color: #333;
   margin: 0;
   line-height: 1.6;
-  max-width: 600px;
+  max-width: 700px;
 }
 
-/* Right Side - Picture-in-Picture */
-.guide-right-side {
+/* Right: PIP */
+.guide-pip-v2 {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -270,8 +290,8 @@ hr {
   flex-shrink: 0;
 }
 
-.guide-pip-box {
-  width: 300px;
+.pip-video-v2 {
+  width: 320px;
   aspect-ratio: 16 / 9;
   background-color: #4a6b6b;
   border-radius: 12px;
@@ -282,97 +302,94 @@ hr {
   justify-content: center;
 }
 
-.guide-pip-box img {
+.pip-video-v2 img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.guide-pip-label {
+.pip-label-v2 {
   font-size: 14px;
   color: #333;
   text-align: center;
   margin: 0;
   font-weight: 600;
-  max-width: 300px;
+  max-width: 320px;
 }
 
-/* GRID */
-.guide-grid-final-v2 {
-  background-color: black;
-  border: 3px solid #4a7c7c;
+/* GUIDE GRID */
+.guide-grid-v2 {
+  background-color: #2e483d;
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding: 0;
 }
 
 /* Header Row */
-.grid-header-row {
+.grid-header-v2 {
   display: flex;
-  background-color: #1a3a3a;
-  border-bottom: 3px solid #4a7c7c;
+  background-color: #1a2e26;
+  border-bottom: 1px solid #1a2e26;
 }
 
-.grid-header-date {
+.grid-date-cell-v2 {
   width: 160px;
   padding: 16px;
-  border-right: 3px solid #4a7c7c;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  color: #00ff00;
+  color: #b3ff80;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background-color: #1a2e26;
 }
 
-.grid-header-time {
+.grid-time-cell-v2 {
   flex: 1;
   padding: 16px;
   text-align: center;
-  border-right: 3px solid #4a7c7c;
   font-size: 13px;
   font-weight: 600;
-  color: #cccccc;
-}
-
-.grid-header-time:last-child {
-  border-right: none;
+  color: #b3ff80;
+  background-color: #1a2e26;
 }
 
 /* Station Rows */
-.grid-station-row {
+.grid-row-v2 {
   display: flex;
-  border-bottom: 3px solid #4a7c7c;
+  background-color: #2e483d;
 }
 
-.grid-station-row:last-child {
-  border-bottom: none;
+.grid-row-v2:not(:last-child) {
+  border-bottom: 1px solid #1a2e26;
 }
 
-.grid-logo-cell {
+.grid-logo-cell-v2 {
   width: 160px;
   aspect-ratio: 16 / 9;
   background-color: black;
-  border-right: 3px solid #4a7c7c;
   overflow: hidden;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.grid-logo-cell img {
+.grid-logo-cell-v2 img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* Video Cells */
-.grid-video-cell-v2 {
+.grid-cell-v2 {
   flex: 1;
   padding: 16px;
-  border-right: 3px solid #4a7c7c;
   background-color: black;
-  color: white;
+  color: #000000;
   cursor: pointer;
   border: none;
   font-family: 'Helvetica', sans-serif;
@@ -386,208 +403,173 @@ hr {
   transition: all 0.2s;
 }
 
-.grid-video-cell-v2:last-child {
-  border-right: none;
+.grid-cell-v2:not(:last-child) {
+  border-right: 1px solid #1a2e26;
 }
 
-.grid-video-cell-v2:hover {
+.grid-cell-v2:hover {
   background-color: #1a1a1a;
 }
 
-.grid-video-cell-v2.active {
-  background-color: #00ff00;
-  color: black;
+.grid-cell-v2.active-v2 {
+  background-color: #2e483d;
+  color: #66ff00;
 }
 
-.grid-cell-link-v2 {
+.grid-link-v2 {
   text-decoration: none;
   color: inherit;
   display: block;
   width: 100%;
 }
-
 /* Responsive */
 @media (max-width: 1400px) {
-  .guide-top-final {
+  .guide-top-section-v2 {
     padding: 30px;
   }
 
-  .guide-top-content {
+  .guide-top-content-v2 {
     gap: 30px;
   }
 
-  .guide-main-title {
+  .guide-big-title-v2 {
     font-size: 42px;
   }
 
-  .guide-pip-box {
-    width: 240px;
+  .pip-video-v2 {
+    width: 260px;
   }
 }
 
 @media (max-width: 1024px) {
-  .guide-top-final {
+  .guide-top-section-v2 {
     padding: 25px;
   }
 
-  .guide-top-content {
+  .guide-top-content-v2 {
     flex-direction: column;
     gap: 25px;
   }
 
-  .guide-left-side {
-    width: 100%;
-  }
-
-  .guide-main-title {
+  .guide-big-title-v2 {
     font-size: 36px;
   }
 
-  .guide-pip-box {
-    width: 220px;
+  .pip-video-v2 {
+    width: 240px;
   }
 
-  .guide-right-side {
+  .guide-pip-v2 {
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
   }
 }
 
 @media (max-width: 768px) {
-  .guide-final {
+  .guide-page-final-v2 {
     padding: 12px;
     gap: 15px;
   }
 
-  .guide-top-final {
+  .guide-top-section-v2 {
     padding: 20px;
   }
 
-  .guide-top-content {
+  .guide-top-content-v2 {
     flex-direction: column;
     gap: 20px;
   }
 
-  .guide-left-side {
-    gap: 15px;
-  }
-
-  .guide-logo-box {
+  .guide-logo-top-v2 {
     width: 120px;
   }
 
-  .guide-station-header h2 {
-    font-size: 16px;
-  }
-
-  .guide-main-title {
+  .guide-big-title-v2 {
     font-size: 28px;
   }
 
-  .guide-station-desc {
-    font-size: 14px;
+  .guide-desc-v2 {
+    font-size: 13px;
   }
 
-  .guide-pip-box {
+  .pip-video-v2 {
     width: 200px;
   }
 
-  .grid-logo-cell {
+  .grid-logo-cell-v2 {
     width: 100px;
   }
 
-  .grid-header-date {
+  .grid-date-cell-v2 {
     width: 100px;
   }
 
-  .grid-video-cell-v2 {
+  .grid-cell-v2 {
     padding: 12px;
     font-size: 12px;
     min-height: 70px;
   }
 
-  .grid-header-time {
+  .grid-time-cell-v2 {
     padding: 12px;
     font-size: 11px;
   }
 }
 
 @media (max-width: 480px) {
-  .guide-final {
+  .guide-page-final-v2 {
     padding: 8px;
     gap: 12px;
   }
 
-  .guide-top-final {
+  .guide-top-section-v2 {
     padding: 15px;
     border-radius: 8px;
   }
 
-  .guide-top-content {
+  .guide-top-content-v2 {
     gap: 12px;
   }
 
-  .guide-left-side {
-    gap: 10px;
-  }
-
-  .guide-logo-box {
+  .guide-logo-top-v2 {
     width: 90px;
   }
 
-  .guide-station-header h2 {
-    font-size: 14px;
-  }
-
-  .guide-time-range {
-    font-size: 11px;
-  }
-
-  .guide-main-title {
+  .guide-big-title-v2 {
     font-size: 20px;
   }
 
-  .guide-station-desc {
+  .guide-desc-v2 {
     font-size: 12px;
   }
 
-  .guide-pip-box {
+  .pip-video-v2 {
     width: 160px;
   }
 
-  .guide-pip-label {
+  .pip-label-v2 {
     font-size: 11px;
   }
 
-  .grid-logo-cell {
+  .grid-logo-cell-v2 {
     width: 80px;
   }
 
-  .grid-header-date {
+  .grid-date-cell-v2 {
     width: 80px;
     padding: 10px;
-    font-size: 12px;
   }
 
-  .grid-video-cell-v2 {
+  .grid-cell-v2 {
     padding: 8px;
     font-size: 10px;
     min-height: 60px;
   }
 
-  .grid-header-time {
+  .grid-time-cell-v2 {
     padding: 10px;
     font-size: 9px;
-  }
-
-  .grid-header-row {
-    border-bottom: 2px solid #4a7c7c;
-  }
-
-  .grid-station-row {
-    border-bottom: 2px solid #4a7c7c;
   }
 }
 

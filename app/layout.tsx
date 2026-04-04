@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { CurrentlyPlayingProvider } from "@/lib/CurrentlyPlayingContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,9 +25,11 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
       </head>
       <body>
-        <Navbar />
-        {children}
-        <Footer />
+        <CurrentlyPlayingProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </CurrentlyPlayingProvider>
       </body>
     </html>
   );
