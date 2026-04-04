@@ -10,24 +10,25 @@ export function Navbar() {
 
   return (
     <nav className="navbar">
-      {/* Logo/Home */}
+      {/* Left: Logo/Home */}
       <Link href="/" className="navbar-logo">
         <img
           src="/logos/YoFi TV Icon.svg"
-          alt="YoFi TV"
+          alt="Home"
           className="navbar-logo-img"
         />
       </Link>
 
-      {/* Desktop Navigation */}
-      <div className="navbar-desktop">
-        <Link href="/guide" className="navbar-link">
-          <img src="/logos/TV_Guide_Icon.svg" alt="Guide" />
-          <span>Guide</span>
-        </Link>
-      </div>
+      {/* Center: Guide Icon */}
+      <Link href="/guide" className="navbar-icon-link">
+        <img
+          src="/logos/TV_Guide_Icon.svg"
+          alt="Guide"
+          className="navbar-icon"
+        />
+      </Link>
 
-      {/* Hamburger Button */}
+      {/* Right: Hamburger Button */}
       <button
         className="hamburger-button"
         onClick={() => setMenuOpen(!menuOpen)}
@@ -41,6 +42,13 @@ export function Navbar() {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="mobile-menu">
+          <Link
+            href="/"
+            className="menu-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            Home
+          </Link>
           <Link
             href="/guide"
             className="menu-link"

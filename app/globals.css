@@ -42,7 +42,7 @@ hr {
 }
 
 /* ========================================
-   NAVBAR STYLES
+   NAVBAR STYLES (ICONS ONLY)
    ======================================== */
 
 .navbar {
@@ -50,12 +50,13 @@ hr {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 12px 20px;
   background-color: black;
   border-bottom: 1px solid #333;
   z-index: 100;
 }
 
+/* Left: Logo */
 .navbar-logo {
   display: flex;
   align-items: center;
@@ -65,39 +66,35 @@ hr {
 .navbar-logo-img {
   height: 40px;
   width: auto;
+  transition: opacity 0.2s;
 }
 
-/* Desktop Navigation */
-.navbar-desktop {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.navbar-logo-img:hover {
+  opacity: 0.8;
 }
 
-.navbar-link {
+/* Center: Guide Icon */
+.navbar-icon-link {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: white;
+  justify-content: center;
   text-decoration: none;
-  font-size: 14px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: all 0.2s;
+  transition: opacity 0.2s;
+  margin: 0 auto;
 }
 
-.navbar-link:hover {
-  color: #00ff00;
+.navbar-icon-link:hover {
+  opacity: 0.8;
 }
 
-.navbar-link img {
-  width: 20px;
-  height: 20px;
+.navbar-icon {
+  height: 30px;
+  width: auto;
 }
 
 /* Hamburger Button */
 .hamburger-button {
-  display: none;
+  display: flex;
   flex-direction: column;
   background: none;
   border: none;
@@ -181,7 +178,7 @@ hr {
   opacity: 0.8;
 }
 
-/* Desktop - hide hamburger */
+/* Desktop - hide hamburger, show guide icon */
 @media (min-width: 769px) {
   .hamburger-button {
     display: none !important;
@@ -190,16 +187,20 @@ hr {
   .mobile-menu {
     display: none !important;
   }
-}
 
-/* Mobile - show hamburger, hide desktop nav */
-@media (max-width: 768px) {
-  .hamburger-button {
+  .navbar-icon-link {
     display: flex;
   }
+}
 
-  .navbar-desktop {
+/* Mobile - show hamburger, hide guide icon */
+@media (max-width: 768px) {
+  .navbar-icon-link {
     display: none;
+  }
+
+  .hamburger-button {
+    display: flex;
   }
 }
 
@@ -537,89 +538,147 @@ hr {
 }
 
 /* ========================================
-   GUIDE STYLES (DirectTV-style grid)
+   GUIDE STYLES - DIRECTV STYLE (NEW)
    ======================================== */
 
-.guide-page {
+.guide-page-new {
   min-height: 100vh;
   background-color: black;
-  padding: 40px 20px;
+  padding: 20px;
   color: white;
 }
 
-.guide-container {
-  max-width: 1600px;
-  margin: 0 auto;
+/* Header with Logo and Picture-in-Picture */
+.guide-header-new {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  gap: 20px;
 }
 
-.guide-header {
-  margin-bottom: 40px;
+.guide-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.guide-header h1 {
-  font-size: 42px;
-  margin-bottom: 10px;
+.guide-yofi-logo {
+  height: 50px;
+  width: auto;
+}
+
+.guide-header-new h1 {
+  font-size: 36px;
   font-family: 'Seravek', serif;
   color: white;
+  margin: 0;
 }
 
-.guide-subtitle {
-  font-size: 16px;
-  color: #999;
-}
-
-.guide-wrapper {
-  overflow-x: auto;
-  border: 2px solid #333;
-  border-radius: 8px;
-  background-color: #0a0a0a;
-  margin-bottom: 30px;
-}
-
-.guide-grid {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: auto repeat(12, 1fr);
-  gap: 1px;
+/* Picture-in-Picture */
+.now-playing-pip {
+  display: flex;
+  gap: 15px;
+  align-items: center;
   background-color: #1a1a1a;
-  min-width: 100%;
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  flex-shrink: 0;
 }
 
-.guide-column {
+.pip-video {
+  width: 200px;
+  aspect-ratio: 16 / 9;
+  background-color: #0a0a0a;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.pip-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pip-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pip-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pip-station {
+  font-size: 14px;
+  font-weight: 700;
+  color: #00ff00;
+  margin: 0;
+}
+
+.pip-video-title {
+  font-size: 12px;
+  color: #cccccc;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Guide Grid Container */
+.guide-grid-container-new {
+  display: flex;
+  gap: 1px;
+  background-color: #333;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 30px;
+  border: 1px solid #333;
+}
+
+.guide-column-new {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  background-color: #1a1a1a;
+  min-width: 180px;
 }
 
-.guide-time-column {
+.time-column-new {
   position: sticky;
   left: 0;
   z-index: 10;
+  min-width: 100px;
   background-color: #0a0a0a;
-  min-width: 120px;
 }
 
-.guide-cell {
+/* Cells */
+.guide-cell-new {
   padding: 12px;
   background-color: #1a1a1a;
   border: 1px solid #333;
+  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 80px;
-  transition: all 0.2s ease;
+  font-size: 12px;
 }
 
-.guide-header-cell {
+.time-header {
   background-color: #0a0a0a;
   border: 2px solid #333;
   font-weight: 700;
   color: #00ff00;
-  font-size: 12px;
 }
 
-.guide-time-cell {
+.time-cell-new {
   background-color: #0a0a0a;
   color: #999;
   font-size: 11px;
@@ -627,230 +686,171 @@ hr {
   border-right: 2px solid #333;
 }
 
-.guide-station-header {
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
+/* Station Header with Logo */
+.station-header-new {
   background-color: #0a0a0a;
   border: 2px solid #333;
-  border-bottom: 1px solid #333;
-  min-height: auto;
+  padding: 0;
+  min-height: 100px;
+  overflow: hidden;
 }
 
-.guide-station-logo {
+.station-logo-header {
   width: 100%;
-  max-width: 150px;
-  height: auto;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
-  border-radius: 4px;
 }
 
-.guide-station-info {
-  text-align: center;
-  width: 100%;
-}
-
-.guide-station-name {
-  font-size: 12px;
-  font-weight: 700;
-  color: white;
-  margin: 0;
-  line-height: 1.3;
-}
-
-.guide-station-subtitle {
-  font-size: 10px;
-  color: #00ff00;
-  margin: 0;
-}
-
-.guide-cell-link {
+/* Video Cells */
+.guide-cell-link-new {
   text-decoration: none;
   color: inherit;
 }
 
-.guide-station-cell {
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px;
+.video-cell-new {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 180px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
 }
 
-.guide-station-cell:hover {
+.video-cell-new:hover {
   background-color: #2a2a2a;
   border-color: #00ff00;
   box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
 }
 
-.guide-video-title {
-  font-size: 12px;
+.cell-video-title {
+  font-size: 11px;
   font-weight: 600;
   color: white;
-  line-height: 1.4;
+  margin: 0;
+  line-height: 1.3;
 }
 
-.guide-video-meta {
-  font-size: 10px;
-  color: #00ff00;
-}
-
-.guide-info {
+/* Legend */
+.guide-legend-new {
   text-align: center;
-  padding: 20px;
+  padding: 15px;
   background-color: #0a0a0a;
   border: 1px solid #333;
   border-radius: 8px;
 }
 
-.guide-info p {
+.guide-legend-new p {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   color: #999;
 }
 
-@media (max-width: 1200px) {
-  .guide-grid {
-    grid-template-rows: auto repeat(8, 1fr);
+/* Responsive */
+@media (max-width: 1024px) {
+  .guide-header-new {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .guide-station-cell {
+  .now-playing-pip {
+    width: 100%;
+  }
+
+  .pip-video {
+    width: 150px;
+  }
+
+  .guide-column-new {
     min-width: 150px;
-    min-height: 60px;
   }
 
-  .guide-cell {
-    min-height: 60px;
-    padding: 10px;
-  }
-
-  .guide-video-title {
+  .guide-cell-new {
+    min-height: 50px;
+    padding: 8px;
     font-size: 11px;
   }
 
-  .guide-video-meta {
-    font-size: 9px;
+  .station-header-new {
+    min-height: 80px;
   }
 }
 
 @media (max-width: 768px) {
-  .guide-page {
-    padding: 20px 12px;
+  .guide-page-new {
+    padding: 15px;
   }
 
-  .guide-header h1 {
-    font-size: 32px;
-    margin-bottom: 8px;
-  }
-
-  .guide-subtitle {
-    font-size: 14px;
-  }
-
-  .guide-wrapper {
+  .guide-header-new {
     margin-bottom: 20px;
-    border-radius: 4px;
   }
 
-  .guide-time-column {
-    min-width: 80px;
+  .guide-header-new h1 {
+    font-size: 24px;
   }
 
-  .guide-station-cell {
+  .guide-yofi-logo {
+    height: 40px;
+  }
+
+  .now-playing-pip {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .pip-video {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .guide-column-new {
     min-width: 120px;
-    min-height: 50px;
   }
 
-  .guide-cell {
-    min-height: 50px;
-    padding: 8px;
-  }
-
-  .guide-station-header {
-    padding: 8px;
-  }
-
-  .guide-station-logo {
-    max-width: 120px;
-  }
-
-  .guide-station-name {
-    font-size: 11px;
-  }
-
-  .guide-station-subtitle {
-    font-size: 9px;
-  }
-
-  .guide-video-title {
+  .guide-cell-new {
+    min-height: 45px;
+    padding: 6px;
     font-size: 10px;
   }
 
-  .guide-video-meta {
-    font-size: 8px;
+  .station-header-new {
+    min-height: 70px;
   }
 
-  .guide-info p {
-    font-size: 12px;
+  .cell-video-title {
+    font-size: 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .guide-page {
-    padding: 15px 10px;
+  .guide-page-new {
+    padding: 10px;
   }
 
-  .guide-header h1 {
-    font-size: 24px;
+  .guide-header-new h1 {
+    font-size: 20px;
   }
 
-  .guide-subtitle {
-    font-size: 12px;
+  .pip-video {
+    max-width: 150px;
   }
 
-  .guide-grid {
-    grid-template-rows: auto repeat(6, 1fr);
-  }
-
-  .guide-time-column {
-    min-width: 70px;
-  }
-
-  .guide-station-cell {
+  .guide-column-new {
     min-width: 100px;
-    min-height: 40px;
   }
 
-  .guide-cell {
+  .guide-cell-new {
     min-height: 40px;
-    padding: 6px;
-  }
-
-  .guide-time-cell {
+    padding: 5px;
     font-size: 9px;
   }
 
-  .guide-station-logo {
-    max-width: 100px;
+  .station-header-new {
+    min-height: 60px;
   }
 
-  .guide-station-name {
-    font-size: 10px;
-  }
-
-  .guide-station-subtitle {
-    font-size: 8px;
-  }
-
-  .guide-video-title {
+  .cell-video-title {
     font-size: 9px;
-  }
-
-  .guide-video-meta {
-    font-size: 7px;
   }
 }
 
